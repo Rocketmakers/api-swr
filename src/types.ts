@@ -120,9 +120,9 @@ export type UnwrapAxiosResponse<TFunc> = TFunc extends (
 ) => Promise<{ data: infer TResponse; status: number }>
   ? TResponse
   : // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  TFunc extends (...args: Array<any>) => Promise<infer P>
-  ? P
-  : never;
+    TFunc extends (...args: Array<any>) => Promise<infer P>
+    ? P
+    : never;
 
 /**
  * Represents the cache key for an API endpoint. It can be a string param key, an array of param keys, or a function that generates the key from params.

@@ -2,21 +2,7 @@
 @import './shared/fonts';
 
 // ARMSTRONG IMPORTs
-
-// import variables
-@import '~@rocketmakers/armstrong-edge/dist/imports.scss';
-@import '~@rocketmakers/armstrong-edge/dist/animations.scss';
-
-// import chosen icon font
-@import '~@rocketmakers/armstrong-edge/dist/icomoon.scss';
-@import '~@rocketmakers/armstrong-edge/dist/linearicons.scss';
-
-// import base component styles
-@import '~@rocketmakers/armstrong-edge/dist/basic.scss';
-// import styled component styles
-@import '~@rocketmakers/armstrong-edge/dist/prototyping.scss';
-// import animated component styles
-@import '~@rocketmakers/armstrong-edge/dist/animated.scss';
+@import '@rocketmakers/armstrong/css';
 
 *,
 *:before,
@@ -38,12 +24,13 @@ body,
 form {
   display: flex;
   flex-direction: column;
-  @include space-between-children-vertical($spacing-xsmall);
+  gap: var(--arm-spacing-xsmall);
 }
+
 fieldset {
   display: flex;
   flex-direction: column;
-  @include space-between-children-vertical($spacing-xsmall);
+  gap: var(--arm-spacing-xsmall);
 }
 
 .cool {

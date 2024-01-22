@@ -10,6 +10,7 @@
 ## Installation
 
 Install from npm using your package manage of choice:
+
 - `npm install @rocketmakers/api-swr`
 - `pnpm add @rocketmakers/api-swr`
 - `yarn add @rocketmakers/api-swr`

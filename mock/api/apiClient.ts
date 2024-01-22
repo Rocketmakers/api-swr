@@ -17,8 +17,11 @@ async function processTestArgs<TArgs = object>(args: AddTestArgs<TArgs>) {
 }
 
 export class Users {
-  // eslint-disable-next-line no-empty-function
-  constructor(public fetchConfig: object, public basePath: string) {}
+  constructor(
+    public fetchConfig: object,
+    public basePath: string
+    // eslint-disable-next-line no-empty-function
+  ) {}
 
   // gets a list of all the users in the system
   async getUserList(args: AddTestArgs) {

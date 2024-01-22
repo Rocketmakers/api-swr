@@ -12,7 +12,6 @@
     "sourceMap": false,
     "noLib": false,
     "preserveConstEnums": false,
-    "suppressImplicitAnyIndexErrors": true,
     "esModuleInterop": true,
     "importHelpers": true,
     "moduleResolution": "node",
