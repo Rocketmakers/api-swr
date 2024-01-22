@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="47" failures="0" errors="0" time="4.693">
+  <testsuite name="createMockAxiosResponse" errors="0" failures="0" skipped="0" timestamp="2024-01-22T14:04:49" time="2.784" tests="3">
+    <testcase classname="createMockAxiosResponse should return a correct response object when executed" name="createMockAxiosResponse should return a correct response object when executed" time="0.001">
+    </testcase>
+    <testcase classname="createSuccessResponse should return a correct success response object when executed" name="createSuccessResponse should return a correct success response object when executed" time="0.001">
+    </testcase>
+    <testcase classname="createErrorResponse should return a correct error response object when executed" name="createErrorResponse should return a correct error response object when executed" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="useClearCache" errors="0" failures="0" skipped="0" timestamp="2024-01-22T14:04:49" time="3.102" tests="1">
+    <testcase classname="useClearCache should provide a function to clear the SWR cache when executed" name="useClearCache should provide a function to clear the SWR cache when executed" time="0.009">
+    </testcase>
+  </testsuite>
+  <testsuite name="useContentMemo" errors="0" failures="0" skipped="0" timestamp="2024-01-22T14:04:49" time="3.124" tests="8">
+    <testcase classname="useContentMemo should return the same item reference for a primitive value when used" name="useContentMemo should return the same item reference for a primitive value when used" time="0.009">
+    </testcase>
+    <testcase classname="useContentMemo should return the same reference for an array if the content hasn&apos;t changed, regardless of order when used" name="useContentMemo should return the same reference for an array if the content hasn&apos;t changed, regardless of order when used" time="0.001">
+    </testcase>
+    <testcase classname="useContentMemo should return the same reference for an object if the content hasn&apos;t changed, regardless of key order when used" name="useContentMemo should return the same reference for an object if the content hasn&apos;t changed, regardless of key order when used" time="0.001">
+    </testcase>
+    <testcase classname="useContentMemo should return a new reference for an array if the content has changed when used" name="useContentMemo should return a new reference for an array if the content has changed when used" time="0.002">
+    </testcase>
+    <testcase classname="useContentMemo should return a new reference for an object if the content has changed when used" name="useContentMemo should return a new reference for an object if the content has changed when used" time="0.005">
+    </testcase>
+    <testcase classname="useContentMemo should return the same function reference when used" name="useContentMemo should return the same function reference when used" time="0.008">
+    </testcase>
+    <testcase classname="useContentMemo should return null if the input is null when used" name="useContentMemo should return null if the input is null when used" time="0.002">
+    </testcase>
+    <testcase classname="useContentMemo should return undefined if the input is undefined when used" name="useContentMemo should return undefined if the input is undefined when used" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="endpointIdFactory" errors="0" failures="0" skipped="0" timestamp="2024-01-22T14:04:49" time="3.834" tests="4">
+    <testcase classname="endpointIdFactory should create a dictionary with a controller key exported when executed" name="endpointIdFactory should create a dictionary with a controller key exported when executed" time="0.001">
+    </testcase>
+    <testcase classname="endpointIdFactory should create a dictionary with a key for each endpoint when executed" name="endpointIdFactory should create a dictionary with a key for each endpoint when executed" time="0">
+    </testcase>
+    <testcase classname="endpointIdFactory should create a dictionary with an endpointId function which returns the correct ID when executed" name="endpointIdFactory should create a dictionary with an endpointId function which returns the correct ID when executed" time="0">
+    </testcase>
+    <testcase classname="endpointIdFactory should create a dictionary with an endpointId function which correctly appends an additional cache key when executed" name="endpointIdFactory should create a dictionary with an endpointId function which correctly appends an additional cache key when executed" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="cacheKeyConcat" errors="0" failures="0" skipped="0" timestamp="2024-01-22T14:04:49" time="3.852" tests="9">
+    <testcase classname="cacheKeyConcat returns concatenated cache key string" name="cacheKeyConcat returns concatenated cache key string" time="0.001">
+    </testcase>
+    <testcase classname="cacheKeyConcat returns empty string for undefined arguments" name="cacheKeyConcat returns empty string for undefined arguments" time="0.001">
+    </testcase>
+    <testcase classname="cacheKeyConcat returns empty string for no arguments" name="cacheKeyConcat returns empty string for no arguments" time="0">
+    </testcase>
+    <testcase classname="readCacheKey should return endpointId when cacheKey is not specified" name="readCacheKey should return endpointId when cacheKey is not specified" time="0">
+    </testcase>
+    <testcase classname="readCacheKey should return cache key built when executed with a string parameter" name="readCacheKey should return cache key built when executed with a string parameter" time="0">
+    </testcase>
+    <testcase classname="readCacheKey should return cache key built when executed with an array of string parameters" name="readCacheKey should return cache key built when executed with an array of string parameters" time="0">
+    </testcase>
+    <testcase classname="readCacheKey should return cache key built when executed with a function" name="readCacheKey should return cache key built when executed with a function" time="0.001">
+    </testcase>
+    <testcase classname="readCacheKey should return undefined when cache key function returns falsy value" name="readCacheKey should return undefined when cache key function returns falsy value" time="0">
+    </testcase>
+    <testcase classname="readCacheKey should strip out values when any of the cache key array parameters are falsy" name="readCacheKey should strip out values when any of the cache key array parameters are falsy" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="isAxiosResponse" errors="0" failures="0" skipped="0" timestamp="2024-01-22T14:04:49" time="3.861" tests="7">
+    <testcase classname="isAxiosResponse returns true if response is an AxiosResponse object" name="isAxiosResponse returns true if response is an AxiosResponse object" time="0.001">
+    </testcase>
+    <testcase classname="isAxiosResponse returns false if response is not an AxiosResponse object" name="isAxiosResponse returns false if response is not an AxiosResponse object" time="0">
+    </testcase>
+    <testcase classname="fixGeneratedClient should return a new object when executed" name="fixGeneratedClient should return a new object when executed" time="0.001">
+    </testcase>
+    <testcase classname="fixGeneratedClient should correct the scoping issue of public methods when executed" name="fixGeneratedClient should correct the scoping issue of public methods when executed" time="0.001">
+    </testcase>
+    <testcase classname="unwrapAxiosPromise should unwrap the data from an axios response when executed" name="unwrapAxiosPromise should unwrap the data from an axios response when executed" time="0.002">
+    </testcase>
+    <testcase classname="unwrapAxiosPromise should throw an error if the response status is 400 or higher when executed" name="unwrapAxiosPromise should throw an error if the response status is 400 or higher when executed" time="0.002">
+    </testcase>
+    <testcase classname="unwrapAxiosPromise should return non-axios responses unchanged when executed with a non-axios response" name="unwrapAxiosPromise should return non-axios responses unchanged when executed with a non-axios response" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="openApiControllerFactory" errors="0" failures="0" skipped="0" timestamp="2024-01-22T14:04:49" time="3.927" tests="11">
+    <testcase classname="openApiControllerFactory should create an openAPI controller with createAxiosOpenApiController factory when executed" name="openApiControllerFactory should create an openAPI controller with createAxiosOpenApiController factory when executed" time="0.001">
+    </testcase>
+    <testcase classname="openApiControllerFactory should create an createAxiosOpenApiController factory with a key for each endpoint when executed" name="openApiControllerFactory should create an createAxiosOpenApiController factory with a key for each endpoint when executed" time="0">
+    </testcase>
+    <testcase classname="openApiControllerFactory should create controller keys and endpoint keys for each endpoint that match what was passed in when executed" name="openApiControllerFactory should create controller keys and endpoint keys for each endpoint that match what was passed in when executed" time="0">
+    </testcase>
+    <testcase classname="openApiControllerFactory should build an appropriate cache key for each endpoint when executed" name="openApiControllerFactory should build an appropriate cache key for each endpoint when executed" time="0.001">
+    </testcase>
+    <testcase classname="openApiControllerFactory should build an appropriate cache key starts with invalidator for each endpoint when executed" name="openApiControllerFactory should build an appropriate cache key starts with invalidator for each endpoint when executed" time="0">
+    </testcase>
+    <testcase classname="openApiControllerFactory should return a useQuery function for each endpoint when executed" name="openApiControllerFactory should return a useQuery function for each endpoint when executed" time="0.001">
+    </testcase>
+    <testcase classname="openApiControllerFactory should return a useMutation function for each endpoint when executed" name="openApiControllerFactory should return a useMutation function for each endpoint when executed" time="0">
+    </testcase>
+    <testcase classname="openApiControllerFactory should create a fetch function which fetches the data successfully when executed" name="openApiControllerFactory should create a fetch function which fetches the data successfully when executed" time="0">
+    </testcase>
+    <testcase classname="openApiControllerFactory should create a fetch function which handles errors appropriately when executed" name="openApiControllerFactory should create a fetch function which handles errors appropriately when executed" time="0.001">
+    </testcase>
+    <testcase classname="openApiControllerFactory should mock and fetch data successfully through the fetch function when executed" name="openApiControllerFactory should mock and fetch data successfully through the fetch function when executed" time="0">
+    </testcase>
+    <testcase classname="openApiControllerFactory should throw an error when trying to fetch from an undefined mock endpoint" name="openApiControllerFactory should throw an error when trying to fetch from an undefined mock endpoint" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="useQuery" errors="0" failures="0" skipped="0" timestamp="2024-01-22T14:04:49" time="4.008" tests="2">
+    <testcase classname="useQuery should call useSwr with the correct parameters when used" name="useQuery should call useSwr with the correct parameters when used" time="0.009">
+    </testcase>
+    <testcase classname="useQuery should call useClientFetch with the correct parameters when used" name="useQuery should call useClientFetch with the correct parameters when used" time="0.004">
+    </testcase>
+  </testsuite>
+  <testsuite name="useClientFetch" errors="0" failures="0" skipped="0" timestamp="2024-01-22T14:04:49" time="4.081" tests="2">
+    <testcase classname="useClientFetch should fetch data and update state correctly when used" name="useClientFetch should fetch data and update state correctly when used" time="0.015">
+    </testcase>
+    <testcase classname="useClientFetch should handle fetch error and update state correctly when used" name="useClientFetch should handle fetch error and update state correctly when used" time="0.055">
+    </testcase>
+  </testsuite>
+</testsuites>

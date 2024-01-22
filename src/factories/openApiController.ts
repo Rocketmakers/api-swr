@@ -1,0 +1,142 @@
+/*
+ * Factory function for linking OpenAPI to SWR
+ * --------------------------------------
+ * Creates a type safe wrapper around an OpenAPI client
+ */
+import type { AxiosRequestConfig } from 'axios';
+import { Arguments } from 'swr';
+
+import { useClientFetch } from '../hooks/useClientFetch';
+import { useQuery } from '../hooks/useQuery';
+import type {
+  AnyPromiseFunction,
+  BaseAPI,
+  ControllerHooks,
+  EndpointDefinition,
+  IApiControllerFactory,
+  IOpenApiControllerSetup,
+  MockEndpoints,
+} from '../types';
+import { fixGeneratedClient, unwrapAxiosPromise } from '../utils/api';
+import { cacheKeyConcat } from '../utils/caching';
+
+/**
+ * Creates a factory of state management tools from an OpenAPI controller.
+ *
+ * @param {IAxiosOpenApiControllerSetup} options - An object containing options for the factory.
+ * @param {string} options.basePath - The base URL path for the OpenAPI controller.
+ * @param {Configuration} options.fetchConfig - The configuration object for OpenAPI HTTP requests.
+ * @param {boolean} options.enableMocking - Will use mock endpoint definitions instead of calling out to the real API.
+ * @param {APIProcessingHook} options.useApiProcessing - Optional processing hook for all client side fetches.
+ * @param {GlobalSWRConfig} options.swrConfig - Additional config to send to SWR for all queries.
+ * @returns {IApiControllerFactory} A library of controller factory methods that create state management tools for an OpenAPI controller.
+ */
+export const openApiControllerFactory = <TConfig extends object>({
+  basePath,
+  fetchConfig,
+  enableMocking,
+  useApiProcessing,
+  swrConfig,
+}: IOpenApiControllerSetup<TConfig>): IApiControllerFactory => {
+  /**
+   * Creates a set of state management tools from an OpenAPI controller
+   *
+   * @param controllerKey A name to use as the first part of the cache key for this controller, must be unique amongst all controllers
+   * @param OpenApiClass The OpenAPI controller class
+   * @returns A set of state management tools for an OpenAPI controller using Axios
+   */
+  const createAxiosOpenApiController = <TClass extends BaseAPI>(controllerKey: string, OpenApiClass: TClass) => {
+    // fix scoping issues in generated client
+    const client = fixGeneratedClient(new OpenApiClass(fetchConfig, basePath) as InstanceType<TClass>);
+
+    // Record of mock endpoints
+    let registeredMockEndpoints: Partial<MockEndpoints<InstanceType<TClass>, AxiosRequestConfig>> = {};
+
+    /**
+     * Merges the provided mock endpoints with the already registered mock endpoints.
+     * @param mockEndpoints - An object containing mock endpoint functions.
+     */
+    const registerMockEndpoints = (mockEndpoints: typeof registeredMockEndpoints) => {
+      registeredMockEndpoints = { ...registeredMockEndpoints, ...mockEndpoints };
+    };
+
+    /**
+     * Retrieves a mock endpoint function for a given endpoint key.
+     * @param endpointKey - The key of the endpoint to retrieve the mock function for.
+     * @returns The mock function for the given endpoint key.
+     * @throws Will throw an error if a mock function for the given endpoint key has not been registered.
+     */
+    const getMockEndpointFunction = (endpointKey: string) => {
+      const mockFunc = (registeredMockEndpoints as Record<string, AnyPromiseFunction>)[endpointKey];
+
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- this is nonsense, it's always defined
+      if (!mockFunc) {
+        throw new Error(`Mock endpoint not defined for: ${controllerKey}.${endpointKey}`);
+      }
+      return mockFunc;
+    };
+
+    // iterate the OpenAPI class
+    const endpoints = Object.keys(client).reduce<ControllerHooks<InstanceType<TClass>, AxiosRequestConfig>>(
+      (memo, endpointKey) => {
+        /**
+         * Fetch function for server/client side use, calls the OpenAPI fetcher and unwraps the axios response
+         * @param args Whatever args have been passed to the fetch, this function doesn't need to know what they are
+         * @returns The unwrapped axios response data
+         */
+        const fetch = async (...args: Array<unknown>) => {
+          if (enableMocking) {
+            const mockFunc = getMockEndpointFunction(endpointKey);
+            return unwrapAxiosPromise(() => mockFunc(...args));
+          }
+          const func = (client as Record<string, AnyPromiseFunction>)[endpointKey];
+          return unwrapAxiosPromise(() => func(...args));
+        };
+
+        /**
+         * Retrieves the cache key for this specific endpoint
+         * @param additionalCacheKey Any further cache key parts to add on to the default `controllerKey.endpointKey`
+         * @returns The final cache key string for the endpoint
+         */
+        const cacheKeyGetter = (additionalCacheKey?: string) => {
+          return cacheKeyConcat(controllerKey, endpointKey, additionalCacheKey);
+        };
+
+        /**
+         * Returns a `swr` mutate matcher function which will invalidate on the basis of "starts with" on the root cache key
+         * @param additionalCacheKey Any further cache key parts to add on to the default `controllerKey.endpointKey`
+         * @returns A `swr` mutate matcher function
+         */
+        const startsWithInvalidator = (additionalCacheKey?: string) => {
+          return (key: Arguments) => {
+            return typeof key === 'string' && key.startsWith(cacheKeyGetter(additionalCacheKey));
+          };
+        };
+
+        const endpointId = cacheKeyGetter();
+
+        /**
+         * The combined state management tools for this endpoint
+         */
+        const endpointTools: EndpointDefinition<AnyPromiseFunction, AxiosRequestConfig> = {
+          controllerKey,
+          endpointKey,
+          endpointId: cacheKeyConcat(controllerKey, endpointKey),
+          fetch,
+          cacheKey: cacheKeyGetter,
+          startsWithInvalidator,
+          useQuery: (config) => useQuery(endpointId, fetch, config, useApiProcessing, swrConfig),
+          useMutation: (config) => useClientFetch(endpointId, 'mutation', config?.fetchConfig, fetch, config?.params, useApiProcessing),
+        };
+
+        return { ...memo, [endpointKey]: endpointTools };
+      },
+      // eslint-disable-next-line @typescript-eslint/prefer-reduce-type-parameter
+      {} as ControllerHooks<InstanceType<TClass>, AxiosRequestConfig>
+    );
+
+    return { ...endpoints, registerMockEndpoints };
+  };
+
+  return { createAxiosOpenApiController };
+};
