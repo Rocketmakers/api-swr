@@ -1,10 +1,12 @@
 import * as React from 'react';
 import { Button } from '@rocketmakers/armstrong';
 import { createMeta } from '../_test/storybook/utils';
-import { useGetUsers } from '../mock/state/controllers/user';
+import { useGetUsersInfinite } from '../mock/state/controllers/user';
+
+const pageSize = 5;
 
 export const Default = () => {
-  const { data, isLoading, isValidating, mutate: invalidate } = useGetUsers();
+  const { data, setPage, page, totalPages } = useGetUsersInfinite(pageSize);
 
   return (
     <div className="home">
@@ -17,9 +19,9 @@ export const Default = () => {
             <th>Email Address</th>
           </tr>
         </thead>
-        {!!data?.data.length && (
+        {!!data.data?.length && (
           <tbody>
-            {data?.data.map((user) => (
+            {data.data?.map((user) => (
               <tr key={user.id}>
                 <td>{user.firstName}</td>
                 <td>{user.lastName}</td>
@@ -29,11 +31,12 @@ export const Default = () => {
           </tbody>
         )}
       </table>
-      <Button pending={isLoading || isValidating} onClick={() => invalidate()}>
-        Refetch
+      <Button onClick={() => setPage((s) => s + 1)} disabled={page === totalPages}>
+        Load more
       </Button>
+      <div>Current page: {page}</div>
     </div>
   );
 };
 
-export default createMeta(Default, 'Hooks', 'useQuery', {}, true);
+export default createMeta(Default, 'Hooks', 'useInfiniteQuery', {}, true);

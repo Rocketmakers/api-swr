@@ -4,7 +4,7 @@ import { MemoryServer } from '../mock/servers/memory';
 import { createMeta } from '../_test/storybook/utils';
 import { useGetUser, useUpdateUser } from '../mock/state/controllers/user';
 
-const testUser = MemoryServer.getUsers()[0].id;
+const testUser = MemoryServer.getUsers().data[0].id;
 
 export const Default = () => {
   const { data } = useGetUser(testUser);

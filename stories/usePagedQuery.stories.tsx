@@ -1,10 +1,13 @@
 import * as React from 'react';
 import { Button } from '@rocketmakers/armstrong';
 import { createMeta } from '../_test/storybook/utils';
-import { useGetUsers } from '../mock/state/controllers/user';
+import { useGetUsersPaged } from '../mock/state/controllers/user';
 
 export const Default = () => {
-  const { data, isLoading, isValidating, mutate: invalidate } = useGetUsers();
+  const [page, setPage] = React.useState(1);
+  const { data } = useGetUsersPaged(5, page);
+
+  const totalPages = Math.ceil((data?.total ?? 0) / 5);
 
   return (
     <div className="home">
@@ -29,11 +32,15 @@ export const Default = () => {
           </tbody>
         )}
       </table>
-      <Button pending={isLoading || isValidating} onClick={() => invalidate()}>
-        Refetch
+      <Button onClick={() => setPage((s) => s - 1)} disabled={page === 1}>
+        Prev
+      </Button>
+      <div>Current page: {page}</div>
+      <Button onClick={() => setPage((s) => s + 1)} disabled={page === totalPages}>
+        Next
       </Button>
     </div>
   );
 };
 
-export default createMeta(Default, 'Hooks', 'useQuery', {}, true);
+export default createMeta(Default, 'Hooks', 'usePagedQuery', {}, true);

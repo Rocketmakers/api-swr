@@ -19,6 +19,7 @@ import type {
 } from '../types';
 import { fixGeneratedClient, unwrapAxiosPromise } from '../utils/api';
 import { cacheKeyConcat } from '../utils/caching';
+import { useInfiniteQuery } from '../hooks/useInfiniteQuery';
 
 /**
  * Creates a factory of state management tools from an OpenAPI controller.
@@ -28,7 +29,8 @@ import { cacheKeyConcat } from '../utils/caching';
  * @param {Configuration} options.fetchConfig - The configuration object for OpenAPI HTTP requests.
  * @param {boolean} options.enableMocking - Will use mock endpoint definitions instead of calling out to the real API.
  * @param {APIProcessingHook} options.useApiProcessing - Optional processing hook for all client side fetches.
- * @param {GlobalSWRConfig} options.swrConfig - Additional config to send to SWR for all queries.
+ * @param {SWRConfiguration<UnwrapAxiosResponse<any> | undefined>} options.swrConfig - Additional config to send to SWR for all queries.
+ * @param {SWRInfiniteConfiguration<UnwrapAxiosResponse<any> | undefined>} options.swrInfiniteConfig - Additional config to send to SWR for all infinite loader queries.
  * @returns {IApiControllerFactory} A library of controller factory methods that create state management tools for an OpenAPI controller.
  */
 export const openApiControllerFactory = <TConfig extends object>({
@@ -37,6 +39,7 @@ export const openApiControllerFactory = <TConfig extends object>({
   enableMocking,
   useApiProcessing,
   swrConfig,
+  swrInfiniteConfig,
 }: IOpenApiControllerSetup<TConfig>): IApiControllerFactory => {
   /**
    * Creates a set of state management tools from an OpenAPI controller
@@ -127,11 +130,11 @@ export const openApiControllerFactory = <TConfig extends object>({
           startsWithInvalidator,
           useQuery: (config) => useQuery(endpointId, fetch, config, useApiProcessing, swrConfig),
           useMutation: (config) => useClientFetch(endpointId, 'mutation', config?.fetchConfig, fetch, config?.params, useApiProcessing),
+          useInfiniteQuery: (config) => useInfiniteQuery(endpointId, fetch, config, useApiProcessing, swrInfiniteConfig),
         };
 
         return { ...memo, [endpointKey]: endpointTools };
       },
-      // eslint-disable-next-line @typescript-eslint/prefer-reduce-type-parameter
       {} as ControllerHooks<InstanceType<TClass>, AxiosRequestConfig>
     );
 

@@ -36,6 +36,9 @@ export const useQuery = <TFunc extends (...args: Array<unknown>) => Promise<Unwr
   /** Content memo on the swr config to avoid dependency changes in SWR */
   const swrConfig = useContentMemo(hookConfig?.swrConfig);
 
+  /** Content memo on the global swr config to avoid dependency changes in SWR */
+  const globalSwrConfigMemo = useContentMemo(globalSwrConfig);
+
   /** Reads the cacheKey value from the cacheKey definition sent to the hook */
   const cacheKeyValue = React.useMemo(() => {
     return readCacheKey<Partial<FirstArg<TFunc>>>(endpointId, hookConfig?.cacheKey, hookConfig?.params);
@@ -45,7 +48,7 @@ export const useQuery = <TFunc extends (...args: Array<unknown>) => Promise<Unwr
   const rootFetch = React.useCallback(() => clientFetch(), [clientFetch]);
 
   /** Protect the combined SWR config from causing dependency changes in SWR */
-  const combinedSwrConfig = React.useMemo(() => ({ ...globalSwrConfig, ...swrConfig }), [globalSwrConfig, swrConfig]);
+  const combinedSwrConfig = React.useMemo(() => ({ ...globalSwrConfigMemo, ...swrConfig }), [globalSwrConfigMemo, swrConfig]);
 
   /** Returns the native useSwr hook from the SWR library, see here: https://swr.vercel.app */
   return { ...useSwr(cacheKeyValue, rootFetch, combinedSwrConfig), error };
