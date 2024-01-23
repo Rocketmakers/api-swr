@@ -5,6 +5,11 @@ type AddTestArgs<TArgs = object> = TArgs & {
   throwServerError?: boolean;
 };
 
+interface IPagedRequest {
+  pageSize?: number;
+  page?: number;
+}
+
 async function processTestArgs<TArgs = object>(args: AddTestArgs<TArgs>) {
   if (args.requestDelay) {
     await new Promise((r) => {
@@ -24,9 +29,9 @@ export class Users {
   ) {}
 
   // gets a list of all the users in the system
-  async getUserList(args: AddTestArgs) {
+  async getUserList(args: AddTestArgs<IPagedRequest>) {
     await processTestArgs(args);
-    return MemoryServer.getUsers();
+    return MemoryServer.getUsers(args.pageSize, args.page);
   }
 
   // gets a single user by ID.

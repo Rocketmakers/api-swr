@@ -5,6 +5,7 @@
  */
 import type { AxiosRequestConfig } from 'axios';
 import type { Arguments, SWRConfiguration, SWRResponse } from 'swr';
+import type { SWRInfiniteConfiguration, SWRInfiniteResponse } from 'swr/infinite';
 
 /**
  * Represents any class
@@ -90,6 +91,8 @@ export interface IOpenApiControllerSetup<TConfiguration> {
   fetchConfig?: TConfiguration;
   /** Additional config to send to SWR for all queries */
   swrConfig?: SWRConfiguration<UnwrapAxiosResponse<any> | undefined>;
+  /** Additional config to send to SWR for all infinite loader queries */
+  swrInfiniteConfig?: SWRInfiniteConfiguration<UnwrapAxiosResponse<any> | undefined>;
   /** Optional boolean to turn on mocked endpoints */
   enableMocking?: boolean;
   /** Optional processing hook for all client side fetches */
@@ -143,6 +146,14 @@ export interface IUseQueryConfig<TFunc extends AnyPromiseFunction, TConfig> {
   swrConfig?: SWRConfiguration<UnwrapAxiosResponse<TFunc> | undefined>;
 }
 
+export interface IUseQueryInfiniteConfig<TFunc extends AnyPromiseFunction, TConfig>
+  extends Omit<IUseQueryConfig<TFunc, TConfig>, 'swrConfig' | 'params'> {
+  /** Additional config to send to SWR (like settings or fallback data for SSR) */
+  swrConfig?: SWRInfiniteConfiguration<UnwrapAxiosResponse<TFunc> | undefined>;
+  /** The params for the API call (usually a combination route params, query string params & body). Must be supplied as a function which is passed the index of the current page */
+  params?: (index: number, prevData?: UnwrapAxiosResponse<TFunc> | undefined) => Partial<FirstArg<TFunc>>;
+}
+
 /**
  * Represents the configuration options for the useMutation react hook.
  */
@@ -191,6 +202,8 @@ export interface EndpointDefinition<TFunc extends AnyPromiseFunction, TConfig> {
   startsWithInvalidator: (additionalCacheKey?: string) => (key?: Arguments) => boolean;
   /** A hook for performing GET queries - wrapped version of the `useSwr` hook returned from the SWR library, see here: https://swr.vercel.app */
   useQuery: (config?: IUseQueryConfig<TFunc, TConfig>) => SWRResponse<UnwrapAxiosResponse<TFunc>>;
+  /** A hook for performing infinite loader GET queries - wrapped version of the `useInfiniteSwr` hook returned from the SWR library, see here: https://swr.vercel.app */
+  useInfiniteQuery: (config?: IUseQueryInfiniteConfig<TFunc, TConfig>) => SWRInfiniteResponse<UnwrapAxiosResponse<TFunc> | undefined>;
   /** A hook for performing POST/PATCH/PUT/DELETE mutations - interfaces with global processing. */
   useMutation: (config?: IUseMutationConfig<TFunc, TConfig>) => IUseMutationResponse<TFunc>;
 }

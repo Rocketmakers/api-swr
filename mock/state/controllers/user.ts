@@ -12,6 +12,38 @@ export const useGetUsers = () => {
   return userApi.getUserList.useQuery({ params: { requestDelay } });
 };
 
+export const useGetUsersPaged = (pageSize: number, page: number) => {
+  const { requestDelay } = useRequestDelay();
+  return userApi.getUserList.useQuery({
+    cacheKey: ['pageSize', 'page'],
+    params: { pageSize, page, requestDelay },
+    swrConfig: { keepPreviousData: true },
+  });
+};
+
+export const useGetUsersInfinite = (pageSize: number) => {
+  const { requestDelay } = useRequestDelay();
+  const {
+    data,
+    size: page,
+    setSize: setPage,
+    ...hookResponse
+  } = userApi.getUserList.useInfiniteQuery({
+    cacheKey: 'pageSize',
+    params: (pageIndex) => ({ pageSize, page: pageIndex + 1, requestDelay }),
+  });
+
+  const parsedData = React.useMemo(() => {
+    const users = data?.reduce<MemoryServer.IUser[]>((acc, p) => [...acc, ...(p?.data ?? [])], []);
+    const total = data?.[0]?.total ?? 0;
+    return { data: users, total };
+  }, [data]);
+
+  const totalPages = React.useMemo(() => Math.ceil(parsedData.total / pageSize), [pageSize, parsedData.total]);
+
+  return { ...hookResponse, data: parsedData, totalPages, page, setPage };
+};
+
 export const useGetUser = (id: string) => {
   const { requestDelay } = useRequestDelay();
   return userApi.getUser.useQuery({
