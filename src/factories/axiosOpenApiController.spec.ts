@@ -5,7 +5,7 @@ import { fixGeneratedClient } from '../utils/api';
 import { cacheKeyConcat } from '../utils/caching';
 import { createMockAxiosSuccessResponse } from '../utils/mocking';
 
-import { openApiControllerFactory } from './openApiController';
+import { axiosOpenApiControllerFactory } from './axiosOpenApiController';
 
 /** mock OpenAPI controller */
 class MockApi {
@@ -32,12 +32,12 @@ class MockApi {
 
 describe('openApiControllerFactory', () => {
   const basePath = 'http://localhost:8080/api';
-  const openApiControllerFactoryParams: IOpenApiControllerSetup<any> = { basePath };
+  const openApiControllerFactoryParams: IOpenApiControllerSetup<any, any> = { basePath };
   const controllerKey = 'testControllerKey';
 
-  const controllerHooks = openApiControllerFactory(openApiControllerFactoryParams).createAxiosOpenApiController(controllerKey, MockApi);
+  const controllerHooks = axiosOpenApiControllerFactory(openApiControllerFactoryParams).createAxiosOpenApiController(controllerKey, MockApi);
 
-  const mockedController = openApiControllerFactory({
+  const mockedController = axiosOpenApiControllerFactory({
     ...openApiControllerFactoryParams,
     enableMocking: true,
   });
@@ -45,7 +45,7 @@ describe('openApiControllerFactory', () => {
   const endpointKeys = Object.keys(controllerHooks).filter((item) => item !== 'registerMockEndpoints');
 
   it('should create an openAPI controller with createAxiosOpenApiController factory when executed', () => {
-    const factory = openApiControllerFactory(openApiControllerFactoryParams);
+    const factory = axiosOpenApiControllerFactory(openApiControllerFactoryParams);
 
     expect(factory.createAxiosOpenApiController).toBeDefined();
   });

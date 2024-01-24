@@ -63,7 +63,7 @@ describe('useInfiniteQuery', () => {
   });
 
   it('should combine hook level and global SWR configs when used', () => {
-    const { result } = renderHook(() => useInfiniteQuery(endpointId, fetcher, hookConfig, undefined, { errorRetryCount: 5 }));
+    const { result } = renderHook(() => useInfiniteQuery(endpointId, fetcher, hookConfig, undefined, undefined, { errorRetryCount: 5 }));
     expect(result.current).toBeTruthy();
     expect(useSwrInfinite).toHaveBeenCalledWith(expect.any(Function), expect.any(Function), {
       errorRetryCount: 5,
@@ -80,6 +80,6 @@ describe('useInfiniteQuery', () => {
   it('should call useClientFetch with the correct parameters when used', () => {
     const { result } = renderHook(() => useInfiniteQuery(endpointId, fetcher, hookConfig));
     expect(result.current).toBeTruthy();
-    expect(mockUseClientFetch).toHaveBeenCalledWith(endpointId, 'query', hookConfig.fetchConfig, fetcher, undefined, undefined);
+    expect(mockUseClientFetch).toHaveBeenCalledWith(endpointId, 'query', hookConfig.fetchConfig, fetcher, undefined, undefined, undefined, undefined);
   });
 });

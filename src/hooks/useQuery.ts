@@ -4,9 +4,9 @@
  * Wraps the SWR hook, see here: https://swr.vercel.app
  */
 import * as React from 'react';
-import useSwr, { SWRConfiguration, SWRResponse } from 'swr';
+import useSwr, { type SWRConfiguration } from 'swr';
 
-import type { APIProcessingHook, FirstArg, IUseQueryConfig, UnwrapAxiosResponse } from '../types';
+import type { APIProcessingHook, FirstArg, GlobalFetchWrapperHook, IUseQueryConfig, IUseQueryResponse, UnwrapAxiosResponse } from '../types';
 import { readCacheKey } from '../utils/caching';
 
 import { useClientFetch } from './useClientFetch';
@@ -20,18 +20,29 @@ import { useContentMemo } from './useContentMemo';
  * @param {TFunc} fetcher - The function to use for fetching data.
  * @param {IUseQueryConfig<TFunc, TConfig>} hookConfig - An object containing the `cacheKey`, `params`, `config` and `swrConfig` options.
  * @param {APIProcessingHook} useProcessing - An optional API processing hook to render.
+ * @param {GlobalFetchWrapperHook<TConfig>} useGlobalFetchWrapper - An optional fetch wrapper hook to render.
  * @param {SWRConfiguration<UnwrapAxiosResponse<TFunc> | undefined>} globalSwrConfig - Global level SWR config.
  * @returns {SWRResponse<UnwrapAxiosResponse<TFunc>>} - The response from the `useSwr` hook.
  */
-export const useQuery = <TFunc extends (...args: Array<unknown>) => Promise<UnwrapAxiosResponse<TFunc>>, TConfig>(
+export const useQuery = <TFunc extends (...args: Array<unknown>) => Promise<UnwrapAxiosResponse<TFunc>>, TConfig extends object, TProcessingResponse>(
   endpointId: string,
   fetcher: TFunc,
   hookConfig?: IUseQueryConfig<TFunc, TConfig>,
-  useProcessing?: APIProcessingHook,
+  useProcessing?: APIProcessingHook<TProcessingResponse>,
+  useGlobalFetchWrapper?: GlobalFetchWrapperHook<TConfig>,
   globalSwrConfig?: SWRConfiguration<UnwrapAxiosResponse<TFunc> | undefined>
-): SWRResponse<UnwrapAxiosResponse<TFunc> | undefined> => {
+): IUseQueryResponse<TFunc, TProcessingResponse> => {
   /** Used to fetch data on the client, calls the root fetcher with the params and config passed into the hook */
-  const { clientFetch, error } = useClientFetch(endpointId, 'query', hookConfig?.fetchConfig, fetcher, hookConfig?.params, useProcessing);
+  const { clientFetch, error, processingResponse } = useClientFetch(
+    endpointId,
+    'query',
+    hookConfig?.fetchConfig,
+    fetcher,
+    hookConfig?.params,
+    useProcessing,
+    useGlobalFetchWrapper,
+    hookConfig?.fetchWrapper
+  );
 
   /** Content memo on the swr config to avoid dependency changes in SWR */
   const swrConfig = useContentMemo(hookConfig?.swrConfig);
@@ -51,5 +62,5 @@ export const useQuery = <TFunc extends (...args: Array<unknown>) => Promise<Unwr
   const combinedSwrConfig = React.useMemo(() => ({ ...globalSwrConfigMemo, ...swrConfig }), [globalSwrConfigMemo, swrConfig]);
 
   /** Returns the native useSwr hook from the SWR library, see here: https://swr.vercel.app */
-  return { ...useSwr(cacheKeyValue, rootFetch, combinedSwrConfig), error };
+  return { ...useSwr(cacheKeyValue, rootFetch, combinedSwrConfig), error, processingResponse };
 };
