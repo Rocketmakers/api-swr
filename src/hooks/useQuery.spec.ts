@@ -53,7 +53,7 @@ describe('useQuery', () => {
   });
 
   it('should combine hook level and global SWR configs when used', () => {
-    const { result } = renderHook(() => useQuery(endpointId, fetcher, hookConfig, undefined, { errorRetryCount: 5 }));
+    const { result } = renderHook(() => useQuery(endpointId, fetcher, hookConfig, undefined, undefined, { errorRetryCount: 5 }));
     expect(result.current).toBeTruthy();
     expect(useSwr).toHaveBeenCalledWith('controllerKey.endpointKey.test-cache-key-value', expect.any(Function), {
       errorRetryCount: 5,
@@ -64,6 +64,15 @@ describe('useQuery', () => {
   it('should call useClientFetch with the correct parameters when used', () => {
     const { result } = renderHook(() => useQuery(endpointId, fetcher, hookConfig));
     expect(result.current).toBeTruthy();
-    expect(mockUseClientFetch).toHaveBeenCalledWith(endpointId, 'query', hookConfig.fetchConfig, fetcher, hookConfig.params, undefined);
+    expect(mockUseClientFetch).toHaveBeenCalledWith(
+      endpointId,
+      'query',
+      hookConfig.fetchConfig,
+      fetcher,
+      hookConfig.params,
+      undefined,
+      undefined,
+      undefined
+    );
   });
 });

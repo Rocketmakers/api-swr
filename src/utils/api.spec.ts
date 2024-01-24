@@ -1,6 +1,6 @@
-import type { AxiosResponse } from 'axios';
+import { AxiosError, type AxiosResponse } from 'axios';
 
-import { fixGeneratedClient, isAxiosResponse, unwrapAxiosPromise } from './api';
+import { fixGeneratedClient, isAxiosError, isAxiosResponse, unwrapAxiosPromise } from './api';
 
 /**
  * isAxiosResponse
@@ -22,6 +22,39 @@ describe('isAxiosResponse', () => {
     const response = { message: 'Hello World' };
     const result = isAxiosResponse(response);
     expect(result).toBe(false);
+  });
+});
+
+/**
+ * isAxiosError
+ */
+describe('isAxiosError', () => {
+  it('should return true for an AxiosError', () => {
+    const axiosError = new AxiosError('Some error', '404');
+    expect(isAxiosError(axiosError)).toBe(true);
+  });
+
+  it('should return false for a non-AxiosError', () => {
+    const genericError = new Error('Some error');
+    expect(isAxiosError(genericError)).toBe(false);
+  });
+
+  it('should return false for undefined', () => {
+    expect(isAxiosError(undefined)).toBe(false);
+  });
+
+  it('should return false for null', () => {
+    expect(isAxiosError(null)).toBe(false);
+  });
+
+  it('should return false for an object without isAxiosError property', () => {
+    const customError = { message: 'Custom error' };
+    expect(isAxiosError(customError)).toBe(false);
+  });
+
+  it('should return false for a string', () => {
+    const errorMessage = 'Some error message';
+    expect(isAxiosError(errorMessage)).toBe(false);
   });
 });
 

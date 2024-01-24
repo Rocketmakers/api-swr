@@ -5,7 +5,7 @@
  */
 import * as React from 'react';
 
-import type { APIProcessingHook, FirstArg, HookRequestMode, UnwrapAxiosResponse } from '../types';
+import type { APIProcessingHook, FetchWrapper, FirstArg, GlobalFetchWrapperHook, HookRequestMode, UnwrapAxiosResponse } from '../types';
 
 import { useContentMemo } from './useContentMemo';
 
@@ -14,20 +14,28 @@ import { useContentMemo } from './useContentMemo';
  * - Used by both `useQuery` and `useMutation`
  * - Renders the global API Processing hook.
  * @param endpointId The `controller.endpoint` formatted endpoint ID
- * @param mode The hook more (either `query` or `mutation`)
+ * @param mode The hook mode (either `query` or `mutation`)
  * @param fetchConfigArg The fetch config to be sent as the second arg to the fetch method
  * @param fetcher The fetch method for performing the request
  * @param paramsArg The fetch params to be sent as the first arg to the fetch method
  * @param useApProcessing The global API Processing hook if defined.
+ * @param globalFetchWrapperHook An optional hook which returns a wrapper around the fetcher method.
+ * @param localFetchWrapper An optional hook specific fetch wrapper function to use instead of the global hook.
  * @returns a client side fetch function and some other useful state (including the response from the processing hook)
  */
-export const useClientFetch = <TFunc extends (...args: Array<unknown>) => Promise<UnwrapAxiosResponse<TFunc>>, TConfig>(
+export const useClientFetch = <
+  TFunc extends (...args: Array<unknown>) => Promise<UnwrapAxiosResponse<TFunc>>,
+  TConfig extends object,
+  TProcessingResponse,
+>(
   endpointId: string,
   mode: HookRequestMode,
   fetchConfigArg: TConfig | undefined,
   fetcher: TFunc,
   paramsArg?: Partial<FirstArg<TFunc>>,
-  useApProcessing?: APIProcessingHook
+  useApProcessing?: APIProcessingHook<TProcessingResponse>,
+  globalFetchWrapperHook?: GlobalFetchWrapperHook<TConfig>,
+  localFetchWrapper?: FetchWrapper<TFunc, TConfig>
 ) => {
   const [data, setData] = React.useState<UnwrapAxiosResponse<TFunc> | undefined>();
   const [error, setError] = React.useState<unknown>();
@@ -37,6 +45,8 @@ export const useClientFetch = <TFunc extends (...args: Array<unknown>) => Promis
   const params = useContentMemo(paramsArg);
   const fetchConfig = useContentMemo(fetchConfigArg);
 
+  const fetchWrapper = globalFetchWrapperHook?.();
+
   /** Used to fetch data on the client, calls the root fetcher with the params and config passed into the hook */
   const clientFetch = React.useCallback(
     async (execParams?: Partial<FirstArg<TFunc>>) => {
@@ -45,7 +55,13 @@ export const useClientFetch = <TFunc extends (...args: Array<unknown>) => Promis
         setIsLoading(true);
         const finalParams = { ...(params ?? {}), ...(execParams ?? {}) } as FirstArg<TFunc>;
         setStateParams(finalParams);
-        const response = await fetcher(finalParams, fetchConfig);
+        let response: Awaited<UnwrapAxiosResponse<TFunc>>;
+        const wrapper = (localFetchWrapper ?? fetchWrapper) as FetchWrapper<TFunc, TConfig>;
+        if (wrapper) {
+          response = await wrapper({ rootFetcher: fetcher, params: finalParams, mode, config: fetchConfig, endpointId });
+        } else {
+          response = await fetcher(finalParams, fetchConfig);
+        }
         setData(response);
         return response;
       } catch (caughtError) {
@@ -55,19 +71,18 @@ export const useClientFetch = <TFunc extends (...args: Array<unknown>) => Promis
         setIsLoading(false);
       }
     },
-    [params, fetcher, fetchConfig]
+    [params, localFetchWrapper, fetchWrapper, fetcher, mode, fetchConfig, endpointId]
   );
 
   /** Render the processing hook if it exists */
-  const validationErrors =
-    useApProcessing?.({
-      data: data as UnwrapAxiosResponse<unknown>,
-      mode,
-      isLoading,
-      endpointId,
-      params: stateParams,
-      error,
-    }) ?? [];
+  const processingResponse = useApProcessing?.({
+    data: data as UnwrapAxiosResponse<unknown>,
+    mode,
+    isLoading,
+    endpointId,
+    params: stateParams,
+    error,
+  });
 
-  return { validationErrors, clientFetch, data, error, isLoading };
+  return { processingResponse, clientFetch, data, error, isLoading };
 };

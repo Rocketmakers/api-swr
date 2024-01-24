@@ -3,3 +3,4 @@ dist
 www
 .DS_Store
 .eslintcache
+_test/jest/test-results

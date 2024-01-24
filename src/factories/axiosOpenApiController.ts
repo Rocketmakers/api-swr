@@ -22,25 +22,27 @@ import { cacheKeyConcat } from '../utils/caching';
 import { useInfiniteQuery } from '../hooks/useInfiniteQuery';
 
 /**
- * Creates a factory of state management tools from an OpenAPI controller.
+ * Creates a factory of state management tools from an OpenAPI controller using Axios.
  *
  * @param {IAxiosOpenApiControllerSetup} options - An object containing options for the factory.
  * @param {string} options.basePath - The base URL path for the OpenAPI controller.
  * @param {Configuration} options.fetchConfig - The configuration object for OpenAPI HTTP requests.
  * @param {boolean} options.enableMocking - Will use mock endpoint definitions instead of calling out to the real API.
  * @param {APIProcessingHook} options.useApiProcessing - Optional processing hook for all client side fetches.
+ * @param {GlobalFetchWrapperHook<TConfig>} options.useGlobalFetchWrapper - Optional fetch wrapper hook for all client side fetches.
  * @param {SWRConfiguration<UnwrapAxiosResponse<any> | undefined>} options.swrConfig - Additional config to send to SWR for all queries.
  * @param {SWRInfiniteConfiguration<UnwrapAxiosResponse<any> | undefined>} options.swrInfiniteConfig - Additional config to send to SWR for all infinite loader queries.
  * @returns {IApiControllerFactory} A library of controller factory methods that create state management tools for an OpenAPI controller.
  */
-export const openApiControllerFactory = <TConfig extends object>({
+export const axiosOpenApiControllerFactory = <TProcessingResponse>({
   basePath,
   fetchConfig,
   enableMocking,
   useApiProcessing,
+  useGlobalFetchWrapper,
   swrConfig,
   swrInfiniteConfig,
-}: IOpenApiControllerSetup<TConfig>): IApiControllerFactory => {
+}: IOpenApiControllerSetup<AxiosRequestConfig, TProcessingResponse>): IApiControllerFactory<TProcessingResponse> => {
   /**
    * Creates a set of state management tools from an OpenAPI controller
    *
@@ -80,7 +82,7 @@ export const openApiControllerFactory = <TConfig extends object>({
     };
 
     // iterate the OpenAPI class
-    const endpoints = Object.keys(client).reduce<ControllerHooks<InstanceType<TClass>, AxiosRequestConfig>>(
+    const endpoints = Object.keys(client).reduce<ControllerHooks<InstanceType<TClass>, AxiosRequestConfig, TProcessingResponse>>(
       (memo, endpointKey) => {
         /**
          * Fetch function for server/client side use, calls the OpenAPI fetcher and unwraps the axios response
@@ -121,21 +123,31 @@ export const openApiControllerFactory = <TConfig extends object>({
         /**
          * The combined state management tools for this endpoint
          */
-        const endpointTools: EndpointDefinition<AnyPromiseFunction, AxiosRequestConfig> = {
+        const endpointTools: EndpointDefinition<AnyPromiseFunction, AxiosRequestConfig, TProcessingResponse> = {
           controllerKey,
           endpointKey,
           endpointId: cacheKeyConcat(controllerKey, endpointKey),
           fetch,
           cacheKey: cacheKeyGetter,
           startsWithInvalidator,
-          useQuery: (config) => useQuery(endpointId, fetch, config, useApiProcessing, swrConfig),
-          useMutation: (config) => useClientFetch(endpointId, 'mutation', config?.fetchConfig, fetch, config?.params, useApiProcessing),
-          useInfiniteQuery: (config) => useInfiniteQuery(endpointId, fetch, config, useApiProcessing, swrInfiniteConfig),
+          useQuery: (config) => useQuery(endpointId, fetch, config, useApiProcessing, useGlobalFetchWrapper, swrConfig),
+          useMutation: (config) =>
+            useClientFetch(
+              endpointId,
+              'mutation',
+              config?.fetchConfig,
+              fetch,
+              config?.params,
+              useApiProcessing,
+              useGlobalFetchWrapper,
+              config?.fetchWrapper
+            ),
+          useInfiniteQuery: (config) => useInfiniteQuery(endpointId, fetch, config, useApiProcessing, useGlobalFetchWrapper, swrInfiniteConfig),
         };
 
         return { ...memo, [endpointKey]: endpointTools };
       },
-      {} as ControllerHooks<InstanceType<TClass>, AxiosRequestConfig>
+      {} as ControllerHooks<InstanceType<TClass>, AxiosRequestConfig, TProcessingResponse>
     );
 
     return { ...endpoints, registerMockEndpoints };

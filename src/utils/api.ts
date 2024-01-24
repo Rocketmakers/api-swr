@@ -3,7 +3,7 @@
  * --------------------------------------
  * These functions are designed to facilitate interaction with an API client
  */
-import type { AxiosResponse } from 'axios';
+import { AxiosError, type AxiosResponse } from 'axios';
 
 import type { AnyPromiseFunction, UnwrapAxiosResponse } from '../types';
 
@@ -15,6 +15,15 @@ import type { AnyPromiseFunction, UnwrapAxiosResponse } from '../types';
  */
 export const isAxiosResponse = <TResponse>(response: AxiosResponse<TResponse> | TResponse): response is AxiosResponse<TResponse> => {
   return !!(response as AxiosResponse<TResponse>).status;
+};
+
+/**
+ * Checks if the provided error is an AxiosError.
+ * @param {unknown} error - The error to be checked.
+ * @returns {boolean} Returns true if the error is an AxiosError, false otherwise.
+ */
+export const isAxiosError = (error: unknown): error is AxiosError => {
+  return !!(error as AxiosError)?.isAxiosError;
 };
 
 /**
@@ -40,13 +49,13 @@ export const fixGeneratedClient = <T>(original: T): T => {
  * @template TFunc - The function to execute and unwrap the response data from.
  * @param {TFunc} func - The function to execute.
  * @returns {Promise<UnwrapAxiosResponse<TFunc>>} - The unwrapped data from the API response.
- * @throws {Error} - If the API response status is 400 or higher, an error with the response statusText is thrown.
+ * @throws {Error} - If the API response status is 400 or higher, an error with the response is thrown.
  */
 export const unwrapAxiosPromise = async <TFunc extends AnyPromiseFunction>(func: TFunc): Promise<UnwrapAxiosResponse<TFunc>> => {
   const response: unknown = await func();
   if (isAxiosResponse(response)) {
     if (response.status >= 400) {
-      throw new Error(response.statusText);
+      throw new AxiosError(response.statusText, response.status.toString(), response.config, response.request, response);
     }
     return response.data as UnwrapAxiosResponse<TFunc>;
   }

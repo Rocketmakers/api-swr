@@ -1,6 +1,6 @@
-import { openApiControllerFactory } from '../../src';
+import { axiosOpenApiControllerFactory } from '../../src';
 
-export const apiFactory = openApiControllerFactory({
+export const apiFactory = axiosOpenApiControllerFactory({
   basePath: '',
   enableMocking: false,
   swrConfig: {

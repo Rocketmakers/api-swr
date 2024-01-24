@@ -5,7 +5,7 @@
  */
 export * from './components/provider';
 export * from './factories/endpointIds';
-export * from './factories/openApiController';
+export * from './factories/axiosOpenApiController';
 export * from './hooks/useClearCache';
 export * from './types';
 export * from './utils/api';
