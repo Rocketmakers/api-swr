@@ -1,9 +1,10 @@
 # Rocketmakers - API SWR
 
 [![TypeScript][typescript-badge]][typescript-url]
-[![semantic-release][semantic-badge]][semantic-url]
+[![react][react-badge]][react-url]
+[![vercel][vercel-badge]][vercel-url]
 
-`@rocketmakers/api-swr` is a TypeScript library that provides a convenient wrapper around [SWR](https://swr.vercel.app/) state management library. It allows developers to easily interface with a TypeScript API client while managing client side state.
+`@rocketmakers/api-swr` is a TypeScript library that provides a convenient React wrapper around [SWR](https://swr.vercel.app/) state management library. It allows developers to easily interface with a TypeScript API client while managing client side state.
 
 ---
 
@@ -17,9 +18,67 @@ Install from npm using your package manage of choice:
 
 ---
 
-## Usage
+## Core concepts
 
-To get started with the `@rocketmakers/api-swr` library, create a new `apiFactory` for the desired fetch client (in this case, Axios) by calling one of the factory creation functions and passing in your global config, like so:
+1. **Controller factory** - one created for each API, used to create a "controller" for each tag within the API client.
+2. **Controller** - one created for each tag within the API client, used to create the endpoint hooks.
+3. **Endpoint hook** - a hook consumed by React components, used to retrieve data, run side effects, and manage cache.
+
+---
+
+## Full Documentation
+
+### Setup
+
+- [Recommended file structure](docs/file-structure.md)
+- [The Provider](docs/provider.md)
+- [Custom API client](docs/custom-api-client.md) _(only relevant if not using a generated OpenAP client, otherwise see quick start below)_
+
+### Factories & controllers
+
+- [Controller Factory](docs/controller-factory.md)
+- [Controller](docs/controller.md)
+
+### Endpoint hooks
+
+- [useQuery](docs/use-query.md) _(for GET requests)_
+- [useMutation](docs/use-query.md) _(for POST/PUT/PATCH/DELETE requests)_
+- [useInfiniteQuery](docs/use-infinite-query.md) _(for paged GET requests with infinite loading)_
+
+### Complex queries
+
+- [Caching](docs/caching.md) (coming soon!)
+- [Paging](docs/paging.md) (coming soon!)
+
+### Advanced tools
+
+- [useApiProcessing](docs/api-processing.md) (coming soon!)
+- [useGlobalFetchWrapper](docs/global-fetch-wrapper.md) (coming soon!)
+
+---
+
+## Quick start
+
+This quick start guide assumes you're working from a generated TypeScript OpenAPI client, don't worry if you're not though, it's dead easy to work from a hand written client, see [here](docs/custom-api-client.md).
+
+### 1. Wrap your app with the API SWR provider
+
+To allow all endpoint hooks to read the global cache, your app should be wrapped with the API SWR provider.
+
+_NOTE: If you are an [Armstrong](https://github.com/Rocketmakers/armstrong-edge) user, it's useful to make sure the Armstrong provider is outside the API SWR provider. This will allow you to dispatch Armstrong toast from your API SWR processing hook._
+
+```TypeScript
+import * as React from 'react';
+import { ApiSwrProvider } from '@rocketmakers/api-swr';
+
+export const App: React.FC<React.PropsWithChildren> = ({ children }) => {
+  return <ApiSwrProvider>{children}</ApiSwrProvider>;
+};
+```
+
+### 2. Create a controller factory
+
+API SWR requires a controller factory for each API that you want to integrate. This factory is used for creating controllers. You should pass a base URL for the deployed API.
 
 ```TypeScript
 import { openApiControllerFactory } from '@rocketmakers/api-swr';
@@ -29,23 +88,22 @@ export const apiFactory = openApiControllerFactory({
 });
 ```
 
-The resulting factory can then be imported to create a set of tools for each controller in your API client. The recommended structure is to have a file for each controller. Here's an example of a state management controller file for a generic user management API controller - you can see the controller being created at the top, and then two query hooks. One to retrieve a list of users, and one to retrieve a single user:
+### 3. Create a controller
+
+One controller should be created for each tag within the OpenAPI client. Tags are often used for splitting generated clients by backend controller, (e.g. "auth", "user", "product" etc.) If the generated client does not use tags, it will export a single class called `DefaultApi`, and your app will only need a single controller.
 
 ```TypeScript
-import { pagingConfig } from "@rocketmakers/api-swr"
-import { apiFactory } from "../api.ts"
+import { apiFactory } from "../controllerFactory.ts"
 import { UserApi } from "example-api-client";
 
 export const userApi = apiFactory.createAxiosOpenApiController("user", UserApi);
+```
 
-export const useGetUsers = (page: number, pageSize: number) => {
-  return userApi.getUsers.useQuery({
-    cacheKey: ['page', 'pageSize'],
-    params: { page, pageSize },
-    swrConfig: { keepPreviousData: true },
-  });
-};
+### 4. Create an endpoint hook
 
+There are multiple hook types available (see full docs), but for this quick start guide, here's a simple `useQuery` hook for retrieving a user by ID.
+
+```TypeScript
 export const useGetUser = (userId: string) => {
   return userApi.getUser.useQuery({
     cacheKey: 'userId',
@@ -54,104 +112,34 @@ export const useGetUser = (userId: string) => {
 };
 ```
 
-Here's how the above controller file can be extended to include CRUD mutation hooks which invalidate the appropriate cached data, causing it to be re-fetched by SWR if/when it needs to be:
+### 5. Consume your endpoint hook in a React component
+
+Here's a simple React component which uses our endpoint hook to display a user card.
 
 ```TypeScript
-import { pagingConfig } from "@rocketmakers/api-swr"
-import { apiFactory } from "../api.ts"
-import { UserApi } from "example-api-client";
-import { useSWRConfig } from 'swr';
+import * as React from 'react';
+import { useGetUser } from '../state/controllers/user';
 
-export const userApi = apiFactory.createAxiosOpenApiController("user", UserApi);
+interface IProps {
+  userId: string;
+}
 
-export const useGetUsers = (page: number, pageSize: number) => {
-  return userApi.getUsers.useQuery({
-    cacheKey: ['page', 'pageSize'],
-    params: { page, pageSize },
-    swrConfig: { keepPreviousData: true },
-  });
-};
+export const UserCard: React.FC<IProps> = ({ userId }) => {
 
-export const useGetUser = (userId: string) => {
-  return userApi.getUser.useQuery({
-    cacheKey: 'userId',
-    params: { userId }
-  })
-};
+  const { data } = useGetUser(userId);
 
-export const useCreateUser = () => {
-  const { mutate: invalidate } = useSWRConfig();
-  const { clientFetch, ...rest } = userApi.createUser.useMutation();
-
-  const createUser = React.useCallback(async (user: ICreateUser) => {
-    const response = await clientFetch({ user });
-    if (response) {
-      invalidate(userApi.getUsers.startsWithInvalidator());
-    }
-    return response;
-  }, [clientFetch]);
-
-  return { createUser, ...rest };
-};
-
-export const useUpdateUser = () => {
-  const { mutate: invalidate } = useSWRConfig();
-  const { clientFetch, ...rest } = userApi.updateUser.useMutation();
-
-  const updateUser = React.useCallback(async (user: IUser) => {
-    const response = await clientFetch({ user });
-    if (response.data) {
-      invalidate(userApi.getUsers.startsWithInvalidator());
-      invalidate(userApi.getUser.cacheKey(response.data.id));
-    }
-    return response;
-  }, [clientFetch]);
-
-  return { updateUser, ...rest };
-};
-
-export const useDeleteUser = () => {
-  const { mutate: invalidate } = useSWRConfig();
-  const { clientFetch, ...rest } = userApi.deleteUser.useMutation();
-
-  const deleteUser = React.useCallback(async (id: string) => {
-    const response = await clientFetch({ id });
-    if (response) {
-      invalidate(userApi.getUsers.startsWithInvalidator());
-      invalidate(userApi.getUser.cacheKey(id));
-    }
-    return response;
-  }, [clientFetch]);
-
-  return { deleteUser, ...rest };
-};
+  return (
+    <div>
+      <img src={data?.profilePic} />
+      <h2>{data?.name}</h2>
+    </div>
+  );
+}
 ```
 
-## Mocking
-
-The `@rocketmakers/api-swr` library provides a convenient way to register mock endpoints for testing. This makes it easier to simulate the behavior of your API during development and testing.
-
-To create mock endpoints, you need to first register them. Each controller has a `registerMockEndpoints` function that you can use for this purpose. This function accepts an object where each key is the name of the endpoint you want to mock, and the corresponding value is the function that will be called when that endpoint is accessed.
-
-Here is an example of how to register a mock endpoint:
-
-```TypeScript
-import { createSuccessResponse } from '@rocketmakers/api-swr';
-import { UserApi } from "example-api-client";
-import { createFakeUser } from './mockData.ts';
-
-const userApi = apiFactory.createAxiosOpenApiController("user", UserApi);
-
-userApi.registerMockEndpoints({
-  getUser: async () => {
-    return createSuccessResponse({ ...createFakeUser() });
-  },
-});
-```
-
-Remember that you need to register your mock endpoints before they are used. If you try to access a mock endpoint that hasn't been registered, an error will be thrown. This helps ensure that all endpoints are explicitly accounted for in your tests, which can make your tests more reliable and easier to understand.
-
-[typescript-badge]: https://badges.frapsoft.com/typescript/code/typescript.svg?v=101
-[semantic-badge]: https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg
+[typescript-badge]: https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white
+[react-badge]: https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB
+[vercel-badge]: https://img.shields.io/badge/vercel-%23000000.svg?style=for-the-badge&logo=vercel&logoColor=white
 [typescript-url]: https://github.com/microsoft/TypeScript
-[semantic-url]: https://github.com/semantic-release/semantic-release
+[react-url]: https://react.dev
+[vercel-url]: https://swr.vercel.app

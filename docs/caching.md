@@ -1,0 +1,3 @@
+# Caching
+
+Coming soon! Until then, [this](https://swr.vercel.app/docs/advanced/cache) might help...
