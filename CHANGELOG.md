@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/Rocketmakers/api-swr/compare/v1.2.0...v1.3.0) (2024-03-05)
+
+
+### Features
+
+* added more advanced cache key value getters that accept arrays ([1cdb776](https://github.com/Rocketmakers/api-swr/commit/1cdb7762ab7166d0c1066972e704be9b497ea83f))
+
 # [1.2.0](https://github.com/Rocketmakers/api-swr/compare/v1.1.0...v1.2.0) (2024-01-30)
 
 
