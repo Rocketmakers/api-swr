@@ -219,6 +219,11 @@ export interface IUseMutationResponse<TFunc extends AnyPromiseFunction, TProcess
 }
 
 /**
+ * Represents the additional cache key argument that can be added to a `cacheKey` getter function.
+ */
+export type CacheKeyAdditionalValue = string | Array<string>;
+
+/**
  * The tools returned from a controller factory for each endpoint, so be used in endpoint hooks
  */
 export interface EndpointDefinition<TFunc extends AnyPromiseFunction, TConfig extends object, TProcessingResponse> {
@@ -231,9 +236,9 @@ export interface EndpointDefinition<TFunc extends AnyPromiseFunction, TConfig ex
   /** The fetch method for actually requesting the data from the API */
   fetch: (params?: FirstArg<TFunc>, config?: TConfig) => Promise<UnwrapAxiosResponse<TFunc>>;
   /** Returns the cacheKey specific to the controller/endpoint with an optional addition, in the format: `controllerKey.endpointKey.additionalCacheKey` */
-  cacheKey: (additionalCacheKey?: string) => string;
+  cacheKey: (additionalCacheKey?: CacheKeyAdditionalValue) => string;
   /** Returns a `swr` mutate matcher function which will invalidate on the basis of "starts with" on the root cache key */
-  startsWithInvalidator: (additionalCacheKey?: string) => (key?: Arguments) => boolean;
+  startsWithInvalidator: (additionalCacheKey?: CacheKeyAdditionalValue) => (key?: Arguments) => boolean;
   /** A hook for performing GET queries - wrapped version of the `useSwr` hook returned from the SWR library, see here: https://swr.vercel.app */
   useQuery: (config?: IUseQueryConfig<TFunc, TConfig>) => IUseQueryResponse<TFunc, TProcessingResponse>;
   /** A hook for performing infinite loader GET queries - wrapped version of the `useInfiniteSwr` hook returned from the SWR library, see here: https://swr.vercel.app */
