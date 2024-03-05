@@ -32,7 +32,7 @@ Install from npm using your package manage of choice:
 
 - [Recommended file structure](docs/file-structure.md)
 - [The Provider](docs/provider.md)
-- [Custom API client](docs/custom-api-client.md) _(only relevant if not using a generated OpenAP client, otherwise see quick start below)_
+- [Custom API client](docs/custom-api-client.md) _(only relevant if **not** using a generated OpenAP client, otherwise see quick start below)_
 
 ### Factories & controllers
 
@@ -47,13 +47,13 @@ Install from npm using your package manage of choice:
 
 ### Complex queries
 
-- [Caching](docs/caching.md) (coming soon!)
-- [Paging](docs/paging.md) (coming soon!)
+- [Caching](docs/caching.md)
+- [Paging](docs/paging.md)
 
 ### Advanced tools
 
-- [useApiProcessing](docs/api-processing.md) (coming soon!)
-- [useGlobalFetchWrapper](docs/global-fetch-wrapper.md) (coming soon!)
+- [useApiProcessing](docs/api-processing.md)
+- [useGlobalFetchWrapper](docs/global-fetch-wrapper.md)
 
 ---
 
