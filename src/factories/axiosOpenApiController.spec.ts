@@ -62,7 +62,14 @@ describe('openApiControllerFactory', () => {
     });
   });
 
-  it('should build an appropriate cache key for each endpoint when executed', () => {
+  it('should build an appropriate cache key getter, which works without an additional value', () => {
+    endpointKeys.forEach((baseKey) => {
+      const key = baseKey as keyof MockApi;
+      expect(controllerHooks[key].cacheKey()).toEqual(cacheKeyConcat(controllerKey, baseKey));
+    });
+  });
+
+  it('should build an appropriate cache key getter, which works when a string is passed as the additional value', () => {
     const testCacheKeyValue = 'test-cache-key-value';
     endpointKeys.forEach((baseKey) => {
       const key = baseKey as keyof MockApi;
@@ -70,12 +77,55 @@ describe('openApiControllerFactory', () => {
     });
   });
 
-  it('should build an appropriate cache key starts with invalidator for each endpoint when executed', () => {
+  it('should build an appropriate cache key getter, which works when an array of strings is passed as the additional value', () => {
+    const testCacheKeyValue = ['test-cache-key-value', 'test-cache-key-value-2', 'test-cache-key-value-3'];
+    endpointKeys.forEach((baseKey) => {
+      const key = baseKey as keyof MockApi;
+      expect(controllerHooks[key].cacheKey(testCacheKeyValue)).toEqual(cacheKeyConcat(controllerKey, baseKey, ...testCacheKeyValue));
+    });
+  });
+
+  it('should build an appropriate cache key starts with getter, which works without an additional value', () => {
+    endpointKeys.forEach((baseKey) => {
+      const key = baseKey as keyof MockApi;
+      // this valid key mimics the cache key for a single page of data on a paged request.
+      const validKey = `${controllerKey}.${baseKey}.10.1`;
+      expect(controllerHooks[key].startsWithInvalidator()(validKey)).toEqual(true);
+    });
+    endpointKeys.forEach((baseKey) => {
+      const key = baseKey as keyof MockApi;
+      expect(controllerHooks[key].startsWithInvalidator()('incorrect-key')).toEqual(false);
+    });
+    endpointKeys.forEach((baseKey) => {
+      const key = baseKey as keyof MockApi;
+      expect(controllerHooks[key].startsWithInvalidator()(['not', 'a', 'string'])).toEqual(false);
+    });
+  });
+
+  it('should build an appropriate cache key starts with getter, which works when a string is passed as the additional value', () => {
     const testCacheKeyValue = 'test-cache-key-value';
     endpointKeys.forEach((baseKey) => {
       const key = baseKey as keyof MockApi;
       // this valid key mimics the cache key for a single page of data on a paged request.
       const validKey = `${controllerKey}.${baseKey}.${testCacheKeyValue}.10.1`;
+      expect(controllerHooks[key].startsWithInvalidator(testCacheKeyValue)(validKey)).toEqual(true);
+    });
+    endpointKeys.forEach((baseKey) => {
+      const key = baseKey as keyof MockApi;
+      expect(controllerHooks[key].startsWithInvalidator(testCacheKeyValue)('incorrect-key')).toEqual(false);
+    });
+    endpointKeys.forEach((baseKey) => {
+      const key = baseKey as keyof MockApi;
+      expect(controllerHooks[key].startsWithInvalidator(testCacheKeyValue)(['not', 'a', 'string'])).toEqual(false);
+    });
+  });
+
+  it('should build an appropriate cache key starts with getter, which works when an array of strings is passed as the additional value', () => {
+    const testCacheKeyValue = ['test-cache-key-value', 'test-cache-key-value-2', 'test-cache-key-value-3'];
+    endpointKeys.forEach((baseKey) => {
+      const key = baseKey as keyof MockApi;
+      // this valid key mimics the cache key for a single page of data on a paged request.
+      const validKey = `${controllerKey}.${baseKey}.${testCacheKeyValue.join('.')}.10.1`;
       expect(controllerHooks[key].startsWithInvalidator(testCacheKeyValue)(validKey)).toEqual(true);
     });
     endpointKeys.forEach((baseKey) => {

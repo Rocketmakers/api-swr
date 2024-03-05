@@ -11,6 +11,7 @@ import { useQuery } from '../hooks/useQuery';
 import type {
   AnyPromiseFunction,
   BaseAPI,
+  CacheKeyAdditionalValue,
   ControllerHooks,
   EndpointDefinition,
   IApiControllerFactory,
@@ -103,8 +104,10 @@ export const axiosOpenApiControllerFactory = <TProcessingResponse>({
          * @param additionalCacheKey Any further cache key parts to add on to the default `controllerKey.endpointKey`
          * @returns The final cache key string for the endpoint
          */
-        const cacheKeyGetter = (additionalCacheKey?: string) => {
-          return cacheKeyConcat(controllerKey, endpointKey, additionalCacheKey);
+        const cacheKeyGetter = (additionalCacheKey?: CacheKeyAdditionalValue) => {
+          let finalKeys = Array.isArray(additionalCacheKey) ? additionalCacheKey : [additionalCacheKey];
+          finalKeys = finalKeys.filter((key) => key !== undefined && key !== null);
+          return cacheKeyConcat(controllerKey, endpointKey, ...finalKeys);
         };
 
         /**
@@ -112,7 +115,7 @@ export const axiosOpenApiControllerFactory = <TProcessingResponse>({
          * @param additionalCacheKey Any further cache key parts to add on to the default `controllerKey.endpointKey`
          * @returns A `swr` mutate matcher function
          */
-        const startsWithInvalidator = (additionalCacheKey?: string) => {
+        const startsWithInvalidator = (additionalCacheKey?: CacheKeyAdditionalValue) => {
           return (key: Arguments) => {
             return typeof key === 'string' && key.startsWith(cacheKeyGetter(additionalCacheKey));
           };
