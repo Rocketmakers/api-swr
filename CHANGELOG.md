@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/Rocketmakers/api-swr/compare/v1.3.0...v1.3.1) (2024-03-15)
+
+
+### Bug Fixes
+
+* - Fixed OpenAPI config typings ([55e1d68](https://github.com/Rocketmakers/api-swr/commit/55e1d687b309a99901533dc573eed0b725637f40))
+
 # [1.3.0](https://github.com/Rocketmakers/api-swr/compare/v1.2.0...v1.3.0) (2024-03-05)
 
 
