@@ -89,11 +89,11 @@ export type APIProcessingHook<TProcessingResponse> = (params: IProcessingHookPar
 /**
  * Represents the configuration of an open API controller.
  */
-export interface IOpenApiControllerSetup<TConfig extends object, TProcessingResponse> {
+export interface IOpenApiControllerSetup<TConfig, TProcessingResponse> {
   /** Optional base path for all API calls */
   basePath?: string;
   /** Optional fetch config to pass to all API calls (type exported from the OpenAPI client) */
-  fetchConfig?: TConfig;
+  openApiConfig?: TConfig;
   /** Additional config to send to SWR for all queries */
   swrConfig?: SWRConfiguration<UnwrapAxiosResponse<any> | undefined>;
   /** Additional config to send to SWR for all infinite loader queries */
@@ -103,7 +103,7 @@ export interface IOpenApiControllerSetup<TConfig extends object, TProcessingResp
   /** Optional processing hook for all client side fetches */
   useApiProcessing?: APIProcessingHook<TProcessingResponse>;
   /** Optional wrapper for all client side fetches */
-  useGlobalFetchWrapper?: GlobalFetchWrapperHook<TConfig>;
+  useGlobalFetchWrapper?: GlobalFetchWrapperHook<AxiosRequestConfig>;
 }
 
 /**
