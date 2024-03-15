@@ -27,7 +27,7 @@ import { useInfiniteQuery } from '../hooks/useInfiniteQuery';
  *
  * @param {IAxiosOpenApiControllerSetup} options - An object containing options for the factory.
  * @param {string} options.basePath - The base URL path for the OpenAPI controller.
- * @param {Configuration} options.fetchConfig - The configuration object for OpenAPI HTTP requests.
+ * @param {Configuration} options.openApiConfig - The configuration object for OpenAPI HTTP requests.
  * @param {boolean} options.enableMocking - Will use mock endpoint definitions instead of calling out to the real API.
  * @param {APIProcessingHook} options.useApiProcessing - Optional processing hook for all client side fetches.
  * @param {GlobalFetchWrapperHook<TConfig>} options.useGlobalFetchWrapper - Optional fetch wrapper hook for all client side fetches.
@@ -35,25 +35,26 @@ import { useInfiniteQuery } from '../hooks/useInfiniteQuery';
  * @param {SWRInfiniteConfiguration<UnwrapAxiosResponse<any> | undefined>} options.swrInfiniteConfig - Additional config to send to SWR for all infinite loader queries.
  * @returns {IApiControllerFactory} A library of controller factory methods that create state management tools for an OpenAPI controller.
  */
-export const axiosOpenApiControllerFactory = <TProcessingResponse>({
+export const axiosOpenApiControllerFactory = <TConfig, TProcessingResponse>({
   basePath,
-  fetchConfig,
+  openApiConfig,
   enableMocking,
   useApiProcessing,
   useGlobalFetchWrapper,
   swrConfig,
   swrInfiniteConfig,
-}: IOpenApiControllerSetup<AxiosRequestConfig, TProcessingResponse>): IApiControllerFactory<TProcessingResponse> => {
+}: IOpenApiControllerSetup<TConfig, TProcessingResponse>): IApiControllerFactory<TProcessingResponse> => {
   /**
    * Creates a set of state management tools from an OpenAPI controller
    *
    * @param controllerKey A name to use as the first part of the cache key for this controller, must be unique amongst all controllers
    * @param OpenApiClass The OpenAPI controller class
+   * @param openApiConfigOverride The configuration object for OpenAPI HTTP requests, will override the default configuration at API factory level
    * @returns A set of state management tools for an OpenAPI controller using Axios
    */
-  const createAxiosOpenApiController = <TClass extends BaseAPI>(controllerKey: string, OpenApiClass: TClass) => {
+  const createAxiosOpenApiController = <TClass extends BaseAPI>(controllerKey: string, OpenApiClass: TClass, openApiConfigOverride?: TConfig) => {
     // fix scoping issues in generated client
-    const client = fixGeneratedClient(new OpenApiClass(fetchConfig, basePath) as InstanceType<TClass>);
+    const client = fixGeneratedClient(new OpenApiClass(openApiConfigOverride ?? openApiConfig, basePath) as InstanceType<TClass>);
 
     // Record of mock endpoints
     let registeredMockEndpoints: Partial<MockEndpoints<InstanceType<TClass>, AxiosRequestConfig>> = {};

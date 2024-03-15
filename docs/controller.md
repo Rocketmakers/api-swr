@@ -88,10 +88,11 @@ export const useDeleteUser = () => {
 
 The `createAxiosOpenApiController` method receives two mandatory arguments
 
-| Name            | Description                                                                                                                                                                                                                    |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `controllerKey` | A string key for the controller. This key will be used to prefix all cache keys to ensure caching uniqueness                                                                                                                   |
-| `OpenApiClass`  | A reference to the API client controller class. This must either be a generated OpenAPI class, or a custom class that conforms to the required structure. (see [here](custom-api-client.md) if you're writing a custom class.) |
+| Name                    | Description                                                                                                                                                                                                                    |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `controllerKey`         | A string key for the controller. This key will be used to prefix all cache keys to ensure caching uniqueness                                                                                                                   |
+| `OpenApiClass`          | A reference to the API client controller class. This must either be a generated OpenAPI class, or a custom class that conforms to the required structure. (see [here](custom-api-client.md) if you're writing a custom class.) |
+| `openApiConfigOverride` | This config will be passed as the first argument to the OpenAPI constructor, passing it here will override any config passed at API factory level                                                                              |
 
 ## Returns
 
