@@ -1,3 +1,10 @@
+## [1.3.2](https://github.com/Rocketmakers/api-swr/compare/v1.3.1...v1.3.2) (2024-05-15)
+
+
+### Bug Fixes
+
+* - Added useClient to provider for SSR support ([fb4a5d8](https://github.com/Rocketmakers/api-swr/commit/fb4a5d8e9f467025cc7f001653ed5068ea89a244))
+
 ## [1.3.1](https://github.com/Rocketmakers/api-swr/compare/v1.3.0...v1.3.1) (2024-03-15)
 
 
