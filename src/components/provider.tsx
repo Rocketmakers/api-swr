@@ -1,3 +1,5 @@
+'use client';
+
 /*
  * React provider for SWR config & state
  * --------------------------------------
