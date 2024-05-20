@@ -93,7 +93,7 @@ describe('fixGeneratedClient', () => {
 describe('unwrapAxiosPromise', () => {
   it('should unwrap the data from an axios response when executed', async () => {
     const data = { foo: 'bar' };
-    const response = { status: 200, data };
+    const response = { status: 200, data, statusText: 'OK' };
     const mockFunc = jest.fn().mockResolvedValue(response);
 
     const result = await unwrapAxiosPromise(mockFunc);
