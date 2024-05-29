@@ -1,3 +1,10 @@
+## [1.3.4](https://github.com/Rocketmakers/api-swr/compare/v1.3.3...v1.3.4) (2024-05-29)
+
+
+### Bug Fixes
+
+* - Fixed bug causing axios response not to be detected correctly ([b127e14](https://github.com/Rocketmakers/api-swr/commit/b127e14da3240a275ea559117d2c4a6705210c0c))
+
 ## [1.3.3](https://github.com/Rocketmakers/api-swr/compare/v1.3.2...v1.3.3) (2024-05-20)
 
 
