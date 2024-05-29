@@ -15,7 +15,7 @@ import type { AnyPromiseFunction, UnwrapAxiosResponse } from '../types';
  */
 export const isAxiosResponse = <TResponse>(response: AxiosResponse<TResponse> | TResponse): response is AxiosResponse<TResponse> => {
   const castResponse = response as AxiosResponse<TResponse>;
-  return !!castResponse.status && !!castResponse.statusText;
+  return 'status' in castResponse && 'statusText' in castResponse;
 };
 
 /**
