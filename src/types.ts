@@ -166,6 +166,8 @@ export interface IUseQueryConfig<TFunc extends AnyPromiseFunction, TConfig exten
   cacheKey?: CacheKey<Partial<FirstArg<TFunc>>>;
   /** Additional config to send to SWR (like settings or fallback data for SSR) */
   swrConfig?: SWRConfiguration<UnwrapAxiosResponse<TFunc> | undefined>;
+  /** If this property is false, the query will wait until it becomes true or undefined. Useful for holding back queries until conditions are met */
+  waitFor?: boolean;
 }
 
 export interface IUseQueryInfiniteConfig<TFunc extends AnyPromiseFunction, TConfig extends object>
