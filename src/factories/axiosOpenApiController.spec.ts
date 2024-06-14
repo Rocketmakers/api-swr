@@ -1,11 +1,11 @@
 import type { AxiosResponse } from 'axios';
 
-import type { IOpenApiControllerSetup } from '../types';
 import { fixGeneratedClient } from '../utils/api';
 import { cacheKeyConcat } from '../utils/caching';
 import { createMockAxiosSuccessResponse } from '../utils/mocking';
 
 import { axiosOpenApiControllerFactory } from './axiosOpenApiController';
+import { IOpenApiControllerSetup } from '../@types/axiosOpenApiController';
 
 /** mock OpenAPI controller */
 class MockApi {

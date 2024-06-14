@@ -2,10 +2,9 @@ import { act, renderHook } from '@testing-library/react';
 import * as React from 'react';
 import useSwr from 'swr';
 
-import type { AnyPromiseFunction } from '../types';
-
 import * as useClientFetchModule from './useClientFetch';
 import { useQuery } from './useQuery';
+import type { AnyPromiseFunction } from '../@types/global';
 
 // Mock SWR hook
 jest.mock('swr', () => ({

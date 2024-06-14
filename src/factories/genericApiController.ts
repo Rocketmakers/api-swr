@@ -8,49 +8,40 @@ import { Arguments } from 'swr';
 
 import { useClientFetch } from '../hooks/useClientFetch';
 import { useQuery } from '../hooks/useQuery';
-
-import { fixGeneratedClient, unwrapAxiosPromise } from '../utils/api';
 import { cacheKeyConcat } from '../utils/caching';
 import { useInfiniteQuery } from '../hooks/useInfiniteQuery';
-import type { IOpenApiControllerSetup, IAxiosOpenApiControllerFactory, BaseAPI, AxiosOpenApiControllerHooks } from '../@types/axiosOpenApiController';
-import type { MockEndpoints, AnyPromiseFunction, CacheKeyAdditionalValue, EndpointDefinition } from '../@types/global';
+import { GenericApiControllerHooks, GenericController, IGenericApiControllerFactory, IGenericControllerSetup } from '../@types/genericController';
+import { AnyPromiseFunction, CacheKeyAdditionalValue, EndpointDefinition, MockEndpoints } from '../@types/global';
 
 /**
- * Creates a factory of state management tools from an OpenAPI controller using Axios.
+ * Creates a factory of state management tools from a generic API controller object.
  *
- * @param {IAxiosOpenApiControllerSetup} options - An object containing options for the factory.
- * @param {string} options.basePath - The base URL path for the OpenAPI controller.
- * @param {Configuration} options.openApiConfig - The configuration object for OpenAPI HTTP requests.
+ * @param {TConfig} globalFetchConfig - Optional custom fetch config to pass to all API calls. Can be overridden at endpoint and fetch level.
  * @param {boolean} options.enableMocking - Will use mock endpoint definitions instead of calling out to the real API.
  * @param {APIProcessingHook} options.useApiProcessing - Optional processing hook for all client side fetches.
  * @param {GlobalFetchWrapperHook<TConfig>} options.useGlobalFetchWrapper - Optional fetch wrapper hook for all client side fetches.
- * @param {SWRConfiguration<UnwrapAxiosResponse<any> | undefined>} options.swrConfig - Additional config to send to SWR for all queries.
- * @param {SWRInfiniteConfiguration<UnwrapAxiosResponse<any> | undefined>} options.swrInfiniteConfig - Additional config to send to SWR for all infinite loader queries.
- * @returns {IAxiosOpenApiControllerFactory} A library of controller factory methods that create state management tools for an OpenAPI controller.
+ * @param {SWRConfiguration<any | undefined>} options.swrConfig - Additional config to send to SWR for all queries.
+ * @param {SWRInfiniteConfiguration<any | undefined>} options.swrInfiniteConfig - Additional config to send to SWR for all infinite loader queries.
+ * @returns {IApiControllerFactory} A library of controller factory methods that create state management tools for a generic controller.
  */
-export const axiosOpenApiControllerFactory = <TConfig, TProcessingResponse>({
-  basePath,
-  openApiConfig,
+export const genericApiControllerFactory = <TConfig extends object, TProcessingResponse>({
+  globalFetchConfig,
   enableMocking,
   useApiProcessing,
   useGlobalFetchWrapper,
   swrConfig,
   swrInfiniteConfig,
-}: IOpenApiControllerSetup<TConfig, TProcessingResponse>): IAxiosOpenApiControllerFactory<TProcessingResponse> => {
+}: IGenericControllerSetup<TConfig, TProcessingResponse>): IGenericApiControllerFactory<TConfig, TProcessingResponse> => {
   /**
    * Creates a set of state management tools from an OpenAPI controller
    *
    * @param controllerKey A name to use as the first part of the cache key for this controller, must be unique amongst all controllers
-   * @param OpenApiClass The OpenAPI controller class
-   * @param openApiConfigOverride The configuration object for OpenAPI HTTP requests, will override the default configuration at API factory level
+   * @param controller The controller object
    * @returns A set of state management tools for an OpenAPI controller using Axios
    */
-  const createAxiosOpenApiController = <TClass extends BaseAPI>(controllerKey: string, OpenApiClass: TClass, openApiConfigOverride?: TConfig) => {
-    // fix scoping issues in generated client
-    const client = fixGeneratedClient(new OpenApiClass(openApiConfigOverride ?? openApiConfig, basePath) as InstanceType<TClass>);
-
+  const createGenericApiController = <TController extends GenericController<TConfig>>(controllerKey: string, controller: TController) => {
     // Record of mock endpoints
-    let registeredMockEndpoints: Partial<MockEndpoints<InstanceType<TClass>, AxiosRequestConfig>> = {};
+    let registeredMockEndpoints: Partial<MockEndpoints<TController, TConfig>> = {};
 
     /**
      * Merges the provided mock endpoints with the already registered mock endpoints.
@@ -76,21 +67,21 @@ export const axiosOpenApiControllerFactory = <TConfig, TProcessingResponse>({
       return mockFunc;
     };
 
-    // iterate the OpenAPI class
-    const endpoints = Object.keys(client).reduce<AxiosOpenApiControllerHooks<InstanceType<TClass>, TProcessingResponse>>(
+    // iterate the controller object
+    const endpoints = Object.keys(controller).reduce<GenericApiControllerHooks<TController, TConfig, TProcessingResponse>>(
       (memo, endpointKey) => {
         /**
-         * Fetch function for server/client side use, calls the OpenAPI fetcher and unwraps the axios response
+         * Fetch function for server/client side use, calls the fetcher and unwraps the axios response
          * @param args Whatever args have been passed to the fetch, this function doesn't need to know what they are
          * @returns The unwrapped axios response data
          */
         const fetch = async (...args: Array<unknown>) => {
           if (enableMocking) {
             const mockFunc = getMockEndpointFunction(endpointKey);
-            return unwrapAxiosPromise(() => mockFunc(...args));
+            return () => mockFunc(...args);
           }
-          const func = (client as Record<string, AnyPromiseFunction>)[endpointKey];
-          return unwrapAxiosPromise(() => func(...args));
+          const func = (controller as Record<string, AnyPromiseFunction>)[endpointKey];
+          return () => func(...args);
         };
 
         /**
@@ -144,11 +135,11 @@ export const axiosOpenApiControllerFactory = <TConfig, TProcessingResponse>({
 
         return { ...memo, [endpointKey]: endpointTools };
       },
-      {} as AxiosOpenApiControllerHooks<InstanceType<TClass>, TProcessingResponse>
+      {} as GenericApiControllerHooks<TController, TConfig, TProcessingResponse>
     );
 
     return { ...endpoints, registerMockEndpoints };
   };
 
-  return { createAxiosOpenApiController };
+  return { createGenericApiController };
 };
