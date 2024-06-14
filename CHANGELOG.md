@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/Rocketmakers/api-swr/compare/v1.3.4...v1.4.0) (2024-06-14)
+
+
+### Features
+
+* adds a new waitFor prop to useQuery ([1513082](https://github.com/Rocketmakers/api-swr/commit/151308273043887d13bbff83f84ffa608dd21f7e))
+
 ## [1.3.4](https://github.com/Rocketmakers/api-swr/compare/v1.3.3...v1.3.4) (2024-05-29)
 
 
