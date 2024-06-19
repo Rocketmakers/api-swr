@@ -81,9 +81,9 @@ export const App: React.FC<React.PropsWithChildren> = ({ children }) => {
 API SWR requires a controller factory for each API that you want to integrate. This factory is used for creating controllers. You should pass a base URL for the deployed API.
 
 ```TypeScript
-import { openApiControllerFactory } from '@rocketmakers/api-swr';
+import { axiosOpenApiControllerFactory } from '@rocketmakers/api-swr';
 
-export const apiFactory = openApiControllerFactory({
+export const apiFactory = axiosOpenApiControllerFactory({
   basePath: 'https://my.example.api/dev',
 });
 ```
