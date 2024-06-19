@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/Rocketmakers/api-swr/compare/v1.4.0...v1.4.1) (2024-06-19)
+
+
+### Bug Fixes
+
+* correct function name in readme ([72a4e96](https://github.com/Rocketmakers/api-swr/commit/72a4e96132babd759dee27e36d6955a45b29cd2c))
+
 # [1.4.0](https://github.com/Rocketmakers/api-swr/compare/v1.3.4...v1.4.0) (2024-06-14)
 
 
