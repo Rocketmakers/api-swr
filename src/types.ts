@@ -109,7 +109,7 @@ export interface IOpenApiControllerSetup<TConfig, TProcessingResponse> {
 /**
  * Represents a type that extends the functionality of `ControllerHooks` by adding a method `registerMockEndpoints`.
  */
-type ControllerReturn<TClass extends BaseAPI, TProcessingResponse> = ControllerHooks<
+export type ControllerReturn<TClass extends BaseAPI, TProcessingResponse> = ControllerHooks<
   InstanceType<TClass>,
   AxiosRequestConfig,
   TProcessingResponse
