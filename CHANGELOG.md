@@ -1,3 +1,10 @@
+## [1.5.1](https://github.com/Rocketmakers/api-swr/compare/v1.5.0...v1.5.1) (2024-09-17)
+
+
+### Bug Fixes
+
+* - response types being correctly propogated through hooks ([7f92096](https://github.com/Rocketmakers/api-swr/commit/7f9209678f745b47eace99f04bf399f8f30fbd43))
+
 # [1.5.0](https://github.com/Rocketmakers/api-swr/compare/v1.4.1...v1.5.0) (2024-09-17)
 
 
