@@ -24,7 +24,11 @@ import { APIProcessingHook, FirstArg, GlobalFetchWrapperHook, IUseInfiniteQueryR
  * @param {SWRInfiniteConfiguration<unknown | undefined>} globalSwrInfiniteConfig - Global level infinite SWR config.
  * @returns {IUseInfiniteQueryResponse<TFunc, TProcessingResponse>} - The response from the `useSwrInfinite` hook augmented with the error and processing response.
  */
-export const useInfiniteQuery = <TFunc extends (...args: Array<unknown>) => Promise<unknown>, TConfig extends object, TProcessingResponse>(
+export const useInfiniteQuery = <
+  TFunc extends (...args: Array<unknown>) => Promise<unknown>,
+  TConfig extends object | undefined,
+  TProcessingResponse,
+>(
   endpointId: string,
   fetcher: TFunc,
   hookConfig?: IUseQueryInfiniteConfig<TFunc, TConfig>,
@@ -52,7 +56,7 @@ export const useInfiniteQuery = <TFunc extends (...args: Array<unknown>) => Prom
 
   /** Reads the cacheKey value from the cacheKey definition sent to the hook, appending the params so that they can be read back when fetching */
   const cacheKeyValue = React.useCallback(
-    (index: number, prevData?: unknown) => {
+    (index: number, prevData?: any) => {
       const finalParams = hookConfig?.params?.(index, prevData);
       return [readCacheKey<Partial<FirstArg<TFunc>>>(endpointId, hookConfig?.cacheKey, finalParams), finalParams];
     },
@@ -68,12 +72,15 @@ export const useInfiniteQuery = <TFunc extends (...args: Array<unknown>) => Prom
   );
 
   /** Protect the combined SWR config from causing dependency changes in SWR */
-  const combinedSwrConfig = React.useMemo(() => ({ ...globalSwrConfigMemo, ...swrConfig }), [globalSwrConfigMemo, swrConfig]);
+  const combinedSwrConfig = React.useMemo(
+    () => ({ ...globalSwrConfigMemo, ...swrConfig }) as SWRInfiniteConfiguration<unknown | undefined>,
+    [globalSwrConfigMemo, swrConfig]
+  );
 
   /** Returns the native useSwrInfinite hook from the SWR library, see here: https://swr.vercel.app */
   return {
     ...useSwrInfinite(cacheKeyValue, rootFetch, combinedSwrConfig),
     error,
     processingResponse,
-  };
+  } as IUseInfiniteQueryResponse<TFunc, TProcessingResponse>;
 };

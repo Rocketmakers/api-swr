@@ -5,17 +5,17 @@ import { APIProcessingHook, AnyPromiseFunction, EndpointDefinition, GlobalFetchW
 /**
  * Represents a generic fetch function
  */
-export type GenericControllerFetch<TConfig extends object> = (params: object, config: TConfig | undefined) => Promise<unknown>;
+export type GenericControllerFetch<TConfig extends object | undefined> = (params: any, config: TConfig) => Promise<unknown>;
 
 /**
  * Represents a generic controller with fetch functions for each endpoint
  */
-export type GenericController<TConfig extends object> = Record<string, GenericControllerFetch<TConfig>>;
+export type GenericController<TConfig extends object | undefined> = Record<string, GenericControllerFetch<TConfig>>;
 
 /**
  * Represents the configuration of an open API controller.
  */
-export interface IGenericControllerSetup<TConfig extends object, TProcessingResponse> {
+export interface IGenericControllerSetup<TConfig extends object | undefined, TProcessingResponse> {
   /** Optional custom fetch config to pass to all API calls. Can be overridden at endpoint and fetch level */
   globalFetchConfig?: TConfig;
   /** Additional config to send to SWR for all queries */
@@ -33,7 +33,7 @@ export interface IGenericControllerSetup<TConfig extends object, TProcessingResp
 /**
  * Represents a dictionary of tools for a generic API controller, keyed by the endpoints in the controller
  */
-export type GenericApiControllerHooks<TApiController, TConfig extends object, TProcessingResponse> = {
+export type GenericApiControllerHooks<TApiController, TConfig extends object | undefined, TProcessingResponse> = {
   [TEndpointKey in keyof TApiController]: TApiController[TEndpointKey] extends AnyPromiseFunction
     ? EndpointDefinition<TApiController[TEndpointKey], TConfig, TProcessingResponse, TApiController[TEndpointKey]>
     : never;
@@ -43,7 +43,7 @@ export type GenericApiControllerHooks<TApiController, TConfig extends object, TP
  * Represents a type that extends the functionality of `ControllerHooks` by adding a method `registerMockEndpoints`.
  */
 type GenericApiControllerReturn<
-  TConfig extends object,
+  TConfig extends object | undefined,
   TController extends GenericController<TConfig>,
   TProcessingResponse,
 > = GenericApiControllerHooks<TController, TConfig, TProcessingResponse> & {
@@ -53,10 +53,11 @@ type GenericApiControllerReturn<
 /**
  * Represents the controller creation functions returned by the controller factory
  */
-export interface IGenericApiControllerFactory<TConfig extends object, TProcessingResponse> {
+export interface IGenericApiControllerFactory<TConfig extends object | undefined, TProcessingResponse> {
   /** Creates a set of state management tools from an OpenAPI controller */
   createGenericApiController: <TController extends GenericController<TConfig>>(
     controllerKey: string,
-    controllerObject: TController
+    controllerObject: TController,
+    controllerConfig?: TConfig
   ) => GenericApiControllerReturn<TConfig, TController, TProcessingResponse>;
 }

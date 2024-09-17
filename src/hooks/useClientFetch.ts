@@ -22,7 +22,7 @@ import type { APIProcessingHook, FetchWrapper, FirstArg, GlobalFetchWrapperHook,
  * @param localFetchWrapper An optional hook specific fetch wrapper function to use instead of the global hook.
  * @returns a client side fetch function and some other useful state (including the response from the processing hook)
  */
-export const useClientFetch = <TFunc extends (...args: Array<unknown>) => Promise<unknown>, TConfig extends object, TProcessingResponse>(
+export const useClientFetch = <TFunc extends (...args: Array<unknown>) => Promise<unknown>, TConfig extends object | undefined, TProcessingResponse>(
   endpointId: string,
   mode: HookRequestMode,
   fetchConfigArg: TConfig | undefined,

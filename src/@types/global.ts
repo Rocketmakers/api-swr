@@ -19,7 +19,7 @@ export type HookRequestMode = 'mutation' | 'query';
 /**
  * Type denoting the params passed to the global API Processing hook.
  */
-export interface IFetchWrapperParams<TFunc extends AnyPromiseFunction, TConfig extends object> {
+export interface IFetchWrapperParams<TFunc extends AnyPromiseFunction, TConfig extends object | undefined> {
   /** The `controller.endpoint` format endpoint ID of the request */
   endpointId: string;
   /** A reference to the root fetch function use by swr to request the data  */
@@ -35,7 +35,7 @@ export interface IFetchWrapperParams<TFunc extends AnyPromiseFunction, TConfig e
 /**
  * Represents a wrapper around the raw fetch function for adding extra processing to a fetch request
  */
-export type FetchWrapper<TFunc extends AnyPromiseFunction, TConfig extends object, TResponse = Awaited<ReturnType<TFunc>>> = (
+export type FetchWrapper<TFunc extends AnyPromiseFunction, TConfig extends object | undefined, TResponse = Awaited<ReturnType<TFunc>>> = (
   params: IFetchWrapperParams<TFunc, TConfig>
 ) => Promise<TResponse>;
 
@@ -46,8 +46,8 @@ export type FetchWrapper<TFunc extends AnyPromiseFunction, TConfig extends objec
  * - FURTHER WARNING: The function returned by this hook must call the incoming `rootFetcher` function with the supplied params and config, otherwise the request will not be made.
  */
 export type GlobalFetchWrapperHook<
-  TConfig extends object,
-  TFunc extends (params: object, config: TConfig | undefined) => Promise<unknown>,
+  TConfig extends object | undefined,
+  TFunc extends (...args: Array<any>) => Promise<unknown>,
   TResponse = Awaited<ReturnType<TFunc>>,
 > = () => FetchWrapper<TFunc, TConfig, TResponse>;
 
@@ -86,7 +86,7 @@ export type CacheKey<TArgs> = keyof TArgs | Array<keyof TArgs> | ((params?: TArg
  */
 export type CacheKeyAdditionalValue = string | Array<string>;
 
-export interface IHookBaseConfig<TFunc extends AnyPromiseFunction, TConfig extends object> {
+export interface IHookBaseConfig<TFunc extends AnyPromiseFunction, TConfig extends object | undefined> {
   /** The params for the API call (usually a combination route params, query string params & body) */
   params?: Partial<FirstArg<TFunc>>;
   /** The config for the API call (specific to the fetcher, but usually non-param fetch properties like headers etc.) */
@@ -101,7 +101,7 @@ export interface IHookBaseConfig<TFunc extends AnyPromiseFunction, TConfig exten
 /**
  * Represents the configuration options for the useQuery react hook.
  */
-export interface IUseQueryConfig<TFunc extends AnyPromiseFunction, TConfig extends object, TResponse = Awaited<ReturnType<TFunc>>>
+export interface IUseQueryConfig<TFunc extends AnyPromiseFunction, TConfig extends object | undefined, TResponse = Awaited<ReturnType<TFunc>>>
   extends IHookBaseConfig<TFunc, TConfig> {
   /** The cache key to store the response against, it can be a string param key, an array of param keys, or a function that generates the key from params. */
   cacheKey?: CacheKey<Partial<FirstArg<TFunc>>>;
@@ -109,7 +109,7 @@ export interface IUseQueryConfig<TFunc extends AnyPromiseFunction, TConfig exten
   swrConfig?: SWRConfiguration<TResponse | undefined>;
 }
 
-export interface IUseQueryInfiniteConfig<TFunc extends AnyPromiseFunction, TConfig extends object, TResponse = Awaited<ReturnType<TFunc>>>
+export interface IUseQueryInfiniteConfig<TFunc extends AnyPromiseFunction, TConfig extends object | undefined, TResponse = Awaited<ReturnType<TFunc>>>
   extends Omit<IUseQueryConfig<TFunc, TConfig>, 'swrConfig' | 'params'> {
   /** Additional config to send to SWR (like settings or fallback data for SSR) */
   swrConfig?: SWRInfiniteConfiguration<TResponse | undefined>;
@@ -120,7 +120,7 @@ export interface IUseQueryInfiniteConfig<TFunc extends AnyPromiseFunction, TConf
 /**
  * Represents the configuration options for the useMutation react hook.
  */
-export type IUseMutationConfig<TFunc extends AnyPromiseFunction, TConfig extends object> = IHookBaseConfig<TFunc, TConfig>;
+export type IUseMutationConfig<TFunc extends AnyPromiseFunction, TConfig extends object | undefined> = IHookBaseConfig<TFunc, TConfig>;
 
 export interface IWithProcessingResponse<TProcessingResponse> {
   /** The response returned by the global API processing hook */
@@ -168,7 +168,7 @@ export interface IUseMutationResponse<TFunc extends AnyPromiseFunction, TProcess
  */
 export interface EndpointDefinition<
   TFunc extends AnyPromiseFunction,
-  TConfig extends object,
+  TConfig extends object | undefined,
   TProcessingResponse,
   TResponse = Awaited<ReturnType<TFunc>>,
 > {

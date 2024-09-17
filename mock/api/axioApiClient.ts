@@ -1,27 +1,7 @@
 import { MemoryServer } from '../servers/memory';
+import { AddTestArgs, IPagedRequest, processTestArgs } from './utils';
 
-type AddTestArgs<TArgs = object> = TArgs & {
-  requestDelay?: number;
-  throwServerError?: boolean;
-};
-
-interface IPagedRequest {
-  pageSize?: number;
-  page?: number;
-}
-
-async function processTestArgs<TArgs = object>(args: AddTestArgs<TArgs>) {
-  if (args.requestDelay) {
-    await new Promise((r) => {
-      setTimeout(r, args.requestDelay);
-    });
-  }
-  if (args.throwServerError) {
-    throw new Error('An unexpected error occurred');
-  }
-}
-
-export class Users {
+export class AxiosUsers {
   constructor(
     public fetchConfig: object,
     public basePath: string

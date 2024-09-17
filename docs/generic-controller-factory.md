@@ -1,4 +1,4 @@
-# Controller Factory
+# Generic Controller Factory
 
 - There should be one controller factory per API.
 - Receives core config.
@@ -8,10 +8,16 @@
 ## Example
 
 ```TypeScript
-import { openApiControllerFactory } from '@rocketmakers/api-swr';
+import { genericApiControllerFactory } from '@rocketmakers/api-swr';
 
-export const apiFactory = openApiControllerFactory({
-  basePath: 'https://my.example.api/dev',
+interface IConfig {
+  basePath: string
+}
+
+export const apiFactory = genericApiControllerFactory<IConfig, void>({
+  globalFetchConfig: {
+    basePath: 'https://my.example.api/dev'
+  }
 });
 ```
 
@@ -21,8 +27,7 @@ The controller factory receives a single config object which has the following o
 
 | Name                    | Description                                                                                                                                                                                                                                                                                                                             | Default |
 | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| `basePath`              | The base URL path for your API. This should be an absolute URL and is passed to each endpoint method of the API client to form the final URL                                                                                                                                                                                            | -       |
-| `openApiConfig`         | This config will be passed as the first argument to the OpenAPI constructor. Can be overridden at controller level.                                                                                                                                                                                                                     | -       |
+| `globalFetchConfig`     | This config will be passed as the second argument to all endpoint methods in the API Client. Can be overridden at controller level and at fetch level.                                                                                                                                                                                  | -       |
 | `swrConfig`             | Global level `SWRConfiguration` (see [here](https://swr.vercel.app/docs/api#options) for full docs.) This config will be added to every instance of the [useQuery](use-query.md) hook and combined with any config passed at endpoint level.                                                                                            | -       |
 | `swrInfiniteConfig`     | Global level `SWRInfiniteConfiguration` (see [here](https://swr.vercel.app/docs/pagination.en-US#parameters) under `options` for full docs.) This config will be added to every instance of the [useInfiniteQuery](use-query.md) hook and combined with any config passed at endpoint level.                                            | -       |
 | `enableMocking`         | Whether to use the supplied [mocked endpoints](mocking.md) instead of real endpoints for all requests, resulting in no genuine API calls being made. If this property is `true`, you **must** have a mock endpoint registered for every endpoint used in your app, otherwise an error will be thrown.                                   | `false` |
@@ -33,8 +38,8 @@ The controller factory receives a single config object which has the following o
 
 An object which contains a function property for creating API SWR controllers:
 
-| Name                           | Description                                                                                                                                                                                                                                                                                                                                 |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `createAxiosOpenApiController` | Factory function for creating new API SWR controllers. At the moment, the only controller factory available is designed to work with an OpenAPI generated client, and the [axios](https://axios-http.com/docs/intro) fetch library, but API SWR is structured so that alternative controller factories could easily be added in the future. |
+| Name                         | Description                                                                                                                                                                                                                                                                                                                                     |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `createGenericApiController` | Factory function for creating new API SWR controllers. The generic controller factory is designed to work from a generic API client which must conform to a specific structure (see [here](generic-api-client.md) for more details.) Creating controllers and endpoint hooks from a generic factory is documented [here](generic-controller.md) |
 
 The returned value of the controller factory should be imported into each of your controller files.

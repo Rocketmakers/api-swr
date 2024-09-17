@@ -3,7 +3,6 @@
  * --------------------------------------
  * Creates a type safe wrapper around an OpenAPI client
  */
-import type { AxiosRequestConfig } from 'axios';
 import { Arguments } from 'swr';
 
 import { useClientFetch } from '../hooks/useClientFetch';
@@ -12,6 +11,7 @@ import { cacheKeyConcat } from '../utils/caching';
 import { useInfiniteQuery } from '../hooks/useInfiniteQuery';
 import { GenericApiControllerHooks, GenericController, IGenericApiControllerFactory, IGenericControllerSetup } from '../@types/genericController';
 import { AnyPromiseFunction, CacheKeyAdditionalValue, EndpointDefinition, MockEndpoints } from '../@types/global';
+import { combineConfigs } from '../utils/config';
 
 /**
  * Creates a factory of state management tools from a generic API controller object.
@@ -24,22 +24,27 @@ import { AnyPromiseFunction, CacheKeyAdditionalValue, EndpointDefinition, MockEn
  * @param {SWRInfiniteConfiguration<any | undefined>} options.swrInfiniteConfig - Additional config to send to SWR for all infinite loader queries.
  * @returns {IApiControllerFactory} A library of controller factory methods that create state management tools for a generic controller.
  */
-export const genericApiControllerFactory = <TConfig extends object, TProcessingResponse>({
+export const genericApiControllerFactory = <TConfig extends object | undefined, TProcessingResponse>({
   globalFetchConfig,
   enableMocking,
   useApiProcessing,
   useGlobalFetchWrapper,
   swrConfig,
   swrInfiniteConfig,
-}: IGenericControllerSetup<TConfig, TProcessingResponse>): IGenericApiControllerFactory<TConfig, TProcessingResponse> => {
+}: IGenericControllerSetup<TConfig, TProcessingResponse> = {}): IGenericApiControllerFactory<TConfig, TProcessingResponse> => {
   /**
    * Creates a set of state management tools from an OpenAPI controller
    *
    * @param controllerKey A name to use as the first part of the cache key for this controller, must be unique amongst all controllers
    * @param controller The controller object
+   * @param controllerConfig Optional custom fetch config to pass to all API calls. Inherits global config and can be overridden at fetch level.
    * @returns A set of state management tools for an OpenAPI controller using Axios
    */
-  const createGenericApiController = <TController extends GenericController<TConfig>>(controllerKey: string, controller: TController) => {
+  const createGenericApiController = <TController extends GenericController<TConfig>>(
+    controllerKey: string,
+    controller: TController,
+    controllerConfig?: TConfig
+  ) => {
     // Record of mock endpoints
     let registeredMockEndpoints: Partial<MockEndpoints<TController, TConfig>> = {};
 
@@ -78,10 +83,10 @@ export const genericApiControllerFactory = <TConfig extends object, TProcessingR
         const fetch = async (...args: Array<unknown>) => {
           if (enableMocking) {
             const mockFunc = getMockEndpointFunction(endpointKey);
-            return () => mockFunc(...args);
+            return mockFunc(...args);
           }
           const func = (controller as Record<string, AnyPromiseFunction>)[endpointKey];
-          return () => func(...args);
+          return func(...args);
         };
 
         /**
@@ -111,26 +116,42 @@ export const genericApiControllerFactory = <TConfig extends object, TProcessingR
         /**
          * The combined state management tools for this endpoint
          */
-        const endpointTools: EndpointDefinition<AnyPromiseFunction, AxiosRequestConfig, TProcessingResponse> = {
+        const endpointTools: EndpointDefinition<AnyPromiseFunction, TConfig, TProcessingResponse> = {
           controllerKey,
           endpointKey,
           endpointId: cacheKeyConcat(controllerKey, endpointKey),
-          fetch,
+          fetch: (params, config) => fetch(params, combineConfigs({ fetchConfig: config }, globalFetchConfig, controllerConfig)?.fetchConfig),
           cacheKey: cacheKeyGetter,
           startsWithInvalidator,
-          useQuery: (config) => useQuery(endpointId, fetch, config, useApiProcessing, useGlobalFetchWrapper, swrConfig),
+          useQuery: (config) =>
+            useQuery<AnyPromiseFunction, TConfig, TProcessingResponse>(
+              endpointId,
+              fetch,
+              combineConfigs(config, globalFetchConfig, controllerConfig),
+              useApiProcessing,
+              useGlobalFetchWrapper,
+              swrConfig
+            ),
           useMutation: (config) =>
-            useClientFetch(
+            useClientFetch<AnyPromiseFunction, TConfig, TProcessingResponse>(
               endpointId,
               'mutation',
-              config?.fetchConfig,
+              combineConfigs(config, globalFetchConfig, controllerConfig)?.fetchConfig,
               fetch,
               config?.params,
               useApiProcessing,
               useGlobalFetchWrapper,
               config?.fetchWrapper
             ),
-          useInfiniteQuery: (config) => useInfiniteQuery(endpointId, fetch, config, useApiProcessing, useGlobalFetchWrapper, swrInfiniteConfig),
+          useInfiniteQuery: (config) =>
+            useInfiniteQuery<AnyPromiseFunction, TConfig, TProcessingResponse>(
+              endpointId,
+              fetch,
+              combineConfigs(config, globalFetchConfig, controllerConfig),
+              useApiProcessing,
+              useGlobalFetchWrapper,
+              swrInfiniteConfig
+            ),
         };
 
         return { ...memo, [endpointKey]: endpointTools };
