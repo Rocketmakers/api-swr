@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/Rocketmakers/api-swr/compare/v1.4.1...v1.5.0) (2024-09-17)
+
+
+### Features
+
+* added generic controller factory for use with non-OpenAPI stacks ([9025ab0](https://github.com/Rocketmakers/api-swr/commit/9025ab018b1195c3a16296848a5beceac61f1f54))
+
 ## [1.4.1](https://github.com/Rocketmakers/api-swr/compare/v1.4.0...v1.4.1) (2024-06-19)
 
 
