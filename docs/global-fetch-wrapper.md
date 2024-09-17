@@ -40,10 +40,10 @@ export const useGlobalFetchWrapper: GlobalFetchWrapperHook<AxiosRequestConfig> =
 Once defined, applying this hook to any of your API SWR controllers is as simple as passing it to the controller factory like this:
 
 ```TypeScript
-import { openApiControllerFactory } from '@rocketmakers/api-swr';
+import { axiosOpenApiControllerFactory } from '@rocketmakers/api-swr';
 import { useGlobalFetchWrapper } from "*Fetch wrapper location.*"
 
-export const apiFactory = openApiControllerFactory({
+export const apiFactory = axiosOpenApiControllerFactory({
   basePath: 'https://my.example.api/dev',
   useGlobalFetchWrapper
 });

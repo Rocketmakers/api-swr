@@ -5,9 +5,8 @@
  */
 import * as React from 'react';
 
-import type { APIProcessingHook, FetchWrapper, FirstArg, GlobalFetchWrapperHook, HookRequestMode, UnwrapAxiosResponse } from '../types';
-
 import { useContentMemo } from './useContentMemo';
+import type { APIProcessingHook, FetchWrapper, FirstArg, GlobalFetchWrapperHook, HookRequestMode } from '../@types/global';
 
 /**
  * Root hook for fetching data on the client.
@@ -23,21 +22,17 @@ import { useContentMemo } from './useContentMemo';
  * @param localFetchWrapper An optional hook specific fetch wrapper function to use instead of the global hook.
  * @returns a client side fetch function and some other useful state (including the response from the processing hook)
  */
-export const useClientFetch = <
-  TFunc extends (...args: Array<unknown>) => Promise<UnwrapAxiosResponse<TFunc>>,
-  TConfig extends object,
-  TProcessingResponse,
->(
+export const useClientFetch = <TFunc extends (...args: Array<unknown>) => Promise<unknown>, TConfig extends object | undefined, TProcessingResponse>(
   endpointId: string,
   mode: HookRequestMode,
   fetchConfigArg: TConfig | undefined,
   fetcher: TFunc,
   paramsArg?: Partial<FirstArg<TFunc>>,
   useApProcessing?: APIProcessingHook<TProcessingResponse>,
-  globalFetchWrapperHook?: GlobalFetchWrapperHook<TConfig>,
+  globalFetchWrapperHook?: GlobalFetchWrapperHook<TConfig, TFunc>,
   localFetchWrapper?: FetchWrapper<TFunc, TConfig>
 ) => {
-  const [data, setData] = React.useState<UnwrapAxiosResponse<TFunc> | undefined>();
+  const [data, setData] = React.useState<unknown | undefined>();
   const [error, setError] = React.useState<unknown>();
   const [isLoading, setIsLoading] = React.useState(false);
   const [stateParams, setStateParams] = React.useState<FirstArg<TFunc>>();
@@ -55,7 +50,7 @@ export const useClientFetch = <
         setIsLoading(true);
         const finalParams = { ...(params ?? {}), ...(execParams ?? {}) } as FirstArg<TFunc>;
         setStateParams(finalParams);
-        let response: Awaited<UnwrapAxiosResponse<TFunc>>;
+        let response: unknown;
         const wrapper = (localFetchWrapper ?? fetchWrapper) as FetchWrapper<TFunc, TConfig>;
         if (wrapper) {
           response = await wrapper({ rootFetcher: fetcher, params: finalParams, mode, config: fetchConfig, endpointId });
@@ -76,7 +71,7 @@ export const useClientFetch = <
 
   /** Render the processing hook if it exists */
   const processingResponse = useApProcessing?.({
-    data: data as UnwrapAxiosResponse<unknown>,
+    data: data as unknown,
     mode,
     isLoading,
     endpointId,

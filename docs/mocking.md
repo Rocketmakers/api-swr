@@ -27,9 +27,9 @@ userApi.registerMockEndpoints({
 To instruct API SWR to use mock endpoints instead of real endpoints, set `enableMocking` to `true` when setting up your [controller factory](controller-factory.md):
 
 ```TypeScript
-import { openApiControllerFactory } from '@rocketmakers/api-swr';
+import { axiosOpenApiControllerFactory } from '@rocketmakers/api-swr';
 
-export const apiFactory = openApiControllerFactory({
+export const apiFactory = axiosOpenApiControllerFactory({
   basePath: 'https://my.example.api/dev',
   enableMocking: true
 });

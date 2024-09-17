@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { useSWRConfig } from 'swr';
-import { Users } from '../../api/apiClient';
-import { apiFactory } from '../controllerFactory.ts';
+import { AxiosUsers } from '../../api/axioApiClient.ts';
+import { axiosApiFactory } from '../axiosControllerFactory.ts';
 import { MemoryServer } from '../../servers/memory.ts';
 import { useRequestDelay } from '../useRequestDelay.ts';
 
-export const userApi = apiFactory.createAxiosOpenApiController('user', Users);
+export const userApi = axiosApiFactory.createAxiosOpenApiController('user', AxiosUsers);
 
 export const useGetUsers = () => {
   const { requestDelay } = useRequestDelay();

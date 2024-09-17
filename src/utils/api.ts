@@ -4,8 +4,8 @@
  * These functions are designed to facilitate interaction with an API client
  */
 import { AxiosError, type AxiosResponse } from 'axios';
-
-import type { AnyPromiseFunction, UnwrapAxiosResponse } from '../types';
+import type { AnyPromiseFunction } from '../@types/global';
+import type { UnwrapAxiosResponse } from '../@types/axiosOpenApiController';
 
 /**
  * Checks whether an API response object is an Axios response.

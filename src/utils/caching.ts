@@ -3,7 +3,8 @@
  * --------------------------------------
  * These functions are designed to facilitate param driven caching
  */
-import type { CacheKey } from '../types';
+
+import { CacheKey } from '../@types/global';
 
 /**
  * Concatenates a cache key string from an array of string arguments.

@@ -32,12 +32,17 @@ Install from npm using your package manage of choice:
 
 - [Recommended file structure](docs/file-structure.md)
 - [The Provider](docs/provider.md)
-- [Custom API client](docs/custom-api-client.md) _(only relevant if **not** using a generated OpenAP client, otherwise see quick start below)_
 
-### Factories & controllers
+### OpenAPI + Axios usage
 
-- [Controller Factory](docs/controller-factory.md)
-- [Controller](docs/controller.md)
+- [OpenAPI Controller Factory](docs/openapi-controller-factory.md)
+- [OpenAPI Controller](docs/openapi-controller.md)
+
+### Generic API client usage (NEW!)
+
+- [Generic API client](docs/generic-api-client.md) _(only relevant if **not** using a generated OpenAPI client, otherwise see section above)_
+- [Generic Controller Factory](docs/generic-controller-factory.md)
+- [Generic Controller](docs/generic-controller.md)
 
 ### Endpoint hooks
 
@@ -59,7 +64,7 @@ Install from npm using your package manage of choice:
 
 ## Quick start
 
-This quick start guide assumes you're working from a generated TypeScript OpenAPI client, don't worry if you're not though, it's dead easy to work from a hand written client, see [here](docs/custom-api-client.md).
+This quick start guide assumes you're working from a generated TypeScript OpenAPI client, don't worry if you're not though, it's dead easy to work from a hand written client, see [here](docs/generic-api-client.md).
 
 ### 1. Wrap your app with the API SWR provider
 

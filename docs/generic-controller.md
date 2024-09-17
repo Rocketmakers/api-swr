@@ -1,7 +1,7 @@
-# Controller
+# Generic Controller
 
-- There should be one controller for each tag (or API client controller class.) These classes within the API Client are often tied to backend controllers (things like "auth", "user", "product" etc.) but they can be anything depending on the API in question. Some OpenAPI clients only export a single controller class called `DefaultApi`, if this is the case you'll only need one controller file.
-- Receives a `controllerKey`` and an API client controller class.
+- There should be one controller for each generic API Client controller object. These objects are often tied to backend controllers (things like "auth", "user", "product" etc.) but they can be anything depending on the API in question. For more details on writing and structuring a generic API client, see [here](generic-api-client.md).
+- Receives a `controllerKey` and an API client controller class.
 - Used to create API SWR endpoint hooks.
 - Each controller should live in a separate file alongside its endpoint hooks to avoid dependency cycles (see [file structure](file-structure.md).)
 
@@ -12,12 +12,12 @@ The below example shows a `userApi` controller alongside a set of example CRUD e
 ```TypeScript
 import { pagingConfig } from "@rocketmakers/api-swr"
 import { apiFactory } from "../controllerFactory.ts"
-import { UserApi } from "example-api-client";
+import { userApi } from "example-api-client";
 import { useSWRConfig } from 'swr';
 
 /** CONTROLLER **/
 
-export const userApi = apiFactory.createAxiosOpenApiController("user", UserApi);
+export const userApi = apiFactory.createGenericApiController("user", userApi);
 
 /** ENDPOINT HOOKS **/
 
@@ -86,17 +86,17 @@ export const useDeleteUser = () => {
 
 ## Configuration
 
-The `createAxiosOpenApiController` method receives two mandatory arguments
+The `createGenericApiController` method receives two mandatory arguments and an optional config override object.
 
-| Name                    | Description                                                                                                                                                                                                                    |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `controllerKey`         | A string key for the controller. This key will be used to prefix all cache keys to ensure caching uniqueness                                                                                                                   |
-| `OpenApiClass`          | A reference to the API client controller class. This must either be a generated OpenAPI class, or a custom class that conforms to the required structure. (see [here](custom-api-client.md) if you're writing a custom class.) |
-| `openApiConfigOverride` | This config will be passed as the first argument to the OpenAPI constructor, passing it here will override any config passed at API factory level                                                                              |
+| Name               | Description                                                                                                                                                                                                                                                      |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `controllerKey`    | A string key for the controller. This key will be used to prefix all cache keys to ensure caching uniqueness                                                                                                                                                     |
+| `controllerObject` | A reference to the API client controller object. This must be a custom object that conforms to the required structure. (see [here](geneirc-api-client.md)).                                                                                                      |
+| `controllerConfig` | This config will be passed as the second argument to all endpoint methods in the API Client. It will be merged over the top of any config passed as `globalFetchConfig` to the controller factory so that individual keys can be overridden at controller level. |
 
 ## Returns
 
-An object which contains factory properties matching the structure of the passed in API client controller class. These properties can be used to create individual endpoint hooks, as well as providing a suite of useful tools.
+An object which contains factory properties matching the structure of the passed in API client controller object. These properties can be used to create individual endpoint hooks, as well as providing a suite of useful tools.
 
 ### Properties of a controller
 

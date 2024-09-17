@@ -17,9 +17,9 @@ Here are some file structure examples depending on the complexity of your API se
 ### `controllerFactory.ts` should look like this:
 
 ```TypeScript
-import { openApiControllerFactory } from '@rocketmakers/api-swr';
+import { axiosOpenApiControllerFactory } from '@rocketmakers/api-swr';
 
-export const apiFactory = openApiControllerFactory({
+export const apiFactory = axiosOpenApiControllerFactory({
   basePath: 'https://my.example.api/dev',
 });
 ```

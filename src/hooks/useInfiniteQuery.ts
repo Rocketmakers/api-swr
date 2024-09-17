@@ -6,18 +6,11 @@
 import * as React from 'react';
 import useSwrInfinite, { SWRInfiniteConfiguration } from 'swr/infinite';
 
-import type {
-  APIProcessingHook,
-  FirstArg,
-  GlobalFetchWrapperHook,
-  IUseInfiniteQueryResponse,
-  IUseQueryInfiniteConfig,
-  UnwrapAxiosResponse,
-} from '../types';
 import { readCacheKey } from '../utils/caching';
 
 import { useClientFetch } from './useClientFetch';
 import { useContentMemo } from './useContentMemo';
+import { APIProcessingHook, FirstArg, GlobalFetchWrapperHook, IUseInfiniteQueryResponse, IUseQueryInfiniteConfig } from '../@types/global';
 
 /**
  * A wrapper around the `useSwrInfinite` hook that includes a custom `fetch` function, `cacheKey` generator and SWR config.
@@ -28,20 +21,20 @@ import { useContentMemo } from './useContentMemo';
  * @param {IUseQueryInfiniteConfig<TFunc, TConfig>} hookConfig - An object containing the `cacheKey`, `params`, `config` and `swrConfig` options.
  * @param {APIProcessingHook} useProcessing - An optional API processing hook to render.
  * @param {GlobalFetchWrapperHook<TConfig>} useGlobalFetchWrapper - An optional fetch wrapper hook to render.
- * @param {SWRInfiniteConfiguration<UnwrapAxiosResponse<TFunc> | undefined>} globalSwrInfiniteConfig - Global level infinite SWR config.
+ * @param {SWRInfiniteConfiguration<unknown | undefined>} globalSwrInfiniteConfig - Global level infinite SWR config.
  * @returns {IUseInfiniteQueryResponse<TFunc, TProcessingResponse>} - The response from the `useSwrInfinite` hook augmented with the error and processing response.
  */
 export const useInfiniteQuery = <
-  TFunc extends (...args: Array<unknown>) => Promise<UnwrapAxiosResponse<TFunc>>,
-  TConfig extends object,
+  TFunc extends (...args: Array<unknown>) => Promise<unknown>,
+  TConfig extends object | undefined,
   TProcessingResponse,
 >(
   endpointId: string,
   fetcher: TFunc,
   hookConfig?: IUseQueryInfiniteConfig<TFunc, TConfig>,
   useProcessing?: APIProcessingHook<TProcessingResponse>,
-  useGlobalFetchWrapper?: GlobalFetchWrapperHook<TConfig>,
-  globalSwrInfiniteConfig?: SWRInfiniteConfiguration<UnwrapAxiosResponse<TFunc> | undefined>
+  useGlobalFetchWrapper?: GlobalFetchWrapperHook<TConfig, TFunc>,
+  globalSwrInfiniteConfig?: SWRInfiniteConfiguration<unknown | undefined>
 ): IUseInfiniteQueryResponse<TFunc, TProcessingResponse> => {
   /** Used to fetch data on the client, calls the root fetcher with the params and config passed into the hook */
   const { clientFetch, error, processingResponse } = useClientFetch(
@@ -63,7 +56,7 @@ export const useInfiniteQuery = <
 
   /** Reads the cacheKey value from the cacheKey definition sent to the hook, appending the params so that they can be read back when fetching */
   const cacheKeyValue = React.useCallback(
-    (index: number, prevData?: UnwrapAxiosResponse<TFunc>) => {
+    (index: number, prevData?: any) => {
       const finalParams = hookConfig?.params?.(index, prevData);
       return [readCacheKey<Partial<FirstArg<TFunc>>>(endpointId, hookConfig?.cacheKey, finalParams), finalParams];
     },
@@ -79,12 +72,15 @@ export const useInfiniteQuery = <
   );
 
   /** Protect the combined SWR config from causing dependency changes in SWR */
-  const combinedSwrConfig = React.useMemo(() => ({ ...globalSwrConfigMemo, ...swrConfig }), [globalSwrConfigMemo, swrConfig]);
+  const combinedSwrConfig = React.useMemo(
+    () => ({ ...globalSwrConfigMemo, ...swrConfig }) as SWRInfiniteConfiguration<unknown | undefined>,
+    [globalSwrConfigMemo, swrConfig]
+  );
 
   /** Returns the native useSwrInfinite hook from the SWR library, see here: https://swr.vercel.app */
   return {
     ...useSwrInfinite(cacheKeyValue, rootFetch, combinedSwrConfig),
     error,
     processingResponse,
-  };
+  } as IUseInfiniteQueryResponse<TFunc, TProcessingResponse>;
 };
