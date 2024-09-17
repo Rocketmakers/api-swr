@@ -12,7 +12,9 @@ jest.mock('swr', () => ({
   default: jest.fn((key: string, innerFetcher: AnyPromiseFunction) => {
     const [data, setData] = React.useState();
     React.useEffect(() => {
-      void innerFetcher().then((fetchedData) => act(() => setData(fetchedData as undefined)));
+      if (key) {
+        void innerFetcher().then((fetchedData) => act(() => setData(fetchedData as undefined)));
+      }
     }, [innerFetcher, key]);
 
     return { data };
@@ -43,6 +45,10 @@ jest.mock('./useClientFetch.ts');
 (useClientFetchModule.useClientFetch as jest.Mock).mockImplementation(mockUseClientFetch);
 
 describe('useQuery', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should call useSwr with the correct parameters when used', () => {
     const { result } = renderHook(() => useQuery(endpointId, fetcher, hookConfig));
     expect(result.current).toBeTruthy();
@@ -73,5 +79,20 @@ describe('useQuery', () => {
       undefined,
       undefined
     );
+  });
+
+  it('should not call fetcher if waitFor is false', () => {
+    renderHook(() => useQuery(endpointId, fetcher, { ...hookConfig, waitFor: false }));
+    expect(fetcher).not.toHaveBeenCalled();
+  });
+
+  it('should call fetcher if waitFor is undefined', () => {
+    renderHook(() => useQuery(endpointId, fetcher, hookConfig));
+    expect(fetcher).toHaveBeenCalled();
+  });
+
+  it('should call fetcher if waitFor is true', () => {
+    renderHook(() => useQuery(endpointId, fetcher, { ...hookConfig, waitFor: true }));
+    expect(fetcher).toHaveBeenCalled();
   });
 });

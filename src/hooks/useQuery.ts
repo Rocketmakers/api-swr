@@ -52,8 +52,11 @@ export const useQuery = <TFunc extends (...args: Array<unknown>) => Promise<unkn
 
   /** Reads the cacheKey value from the cacheKey definition sent to the hook */
   const cacheKeyValue = React.useMemo(() => {
+    if (hookConfig?.waitFor === false) {
+      return undefined;
+    }
     return readCacheKey<Partial<FirstArg<TFunc>>>(endpointId, hookConfig?.cacheKey, hookConfig?.params);
-  }, [hookConfig?.cacheKey, hookConfig?.params, endpointId]);
+  }, [hookConfig?.cacheKey, hookConfig?.params, hookConfig?.waitFor, endpointId]);
 
   /** Protect the root fetcher from causing dependency changes in SWR */
   const rootFetch = React.useCallback(() => clientFetch(), [clientFetch]);

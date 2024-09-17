@@ -55,6 +55,7 @@ The `useQuery` hook receives a configuration object with the following propertie
 | `fetchWrapper` | An optional fetch wrapper for this specific hook. NOTE: This will be called in place of any supplied [global fetch wrapper](global-fetch-wrapper.md) for maximum flexibility. If you want to use the global fetch wrapper, you must call it manually within the wrapper passed here. |
 | `cacheKey`     | The cache key to store the response against, it can be a string param key, an array of param keys, or a function that generates the key from params, see [here](caching.md) for more info                                                                                            |
 | `swrConfig`    | Additional config to send to SWR (like settings or fallback data for SSR.) This `SWRConfiguration` (see [here](https://swr.vercel.app/docs/api#options) for full docs.) will be merged with any global config                                                                        |
+| `waitFor`      | An optional boolean. If this property is false, the query fetch will wait until it becomes true or undefined. Useful for holding back queries until conditions are met.                                                                                                              |
 
 ## Returns
 
