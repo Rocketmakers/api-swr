@@ -86,7 +86,7 @@ export type CacheKey<TArgs> = keyof TArgs | Array<keyof TArgs> | ((params?: TArg
  */
 export type CacheKeyAdditionalValue = string | Array<string>;
 
-export interface IHookBaseConfig<TFunc extends AnyPromiseFunction, TConfig extends object | undefined> {
+export interface IHookBaseConfig<TFunc extends AnyPromiseFunction, TConfig extends object | undefined, TResponse = Awaited<ReturnType<TFunc>>> {
   /** The params for the API call (usually a combination route params, query string params & body) */
   params?: Partial<FirstArg<TFunc>>;
   /** The config for the API call (specific to the fetcher, but usually non-param fetch properties like headers etc.) */
@@ -95,14 +95,14 @@ export interface IHookBaseConfig<TFunc extends AnyPromiseFunction, TConfig exten
    * An optional fetch wrapper for this specific hook.
    * NOTE: This will be called in place of any supplied global fetch wrapper for maximum flexibility. If you want to use the global fetch wrapper, you must call it manually within the wrapper passed here.
    * */
-  fetchWrapper?: FetchWrapper<TFunc, TConfig>;
+  fetchWrapper?: FetchWrapper<TFunc, TConfig, TResponse>;
 }
 
 /**
  * Represents the configuration options for the useQuery react hook.
  */
 export interface IUseQueryConfig<TFunc extends AnyPromiseFunction, TConfig extends object | undefined, TResponse = Awaited<ReturnType<TFunc>>>
-  extends IHookBaseConfig<TFunc, TConfig> {
+  extends IHookBaseConfig<TFunc, TConfig, TResponse> {
   /** The cache key to store the response against, it can be a string param key, an array of param keys, or a function that generates the key from params. */
   cacheKey?: CacheKey<Partial<FirstArg<TFunc>>>;
   /** Additional config to send to SWR (like settings or fallback data for SSR) */
@@ -122,7 +122,11 @@ export interface IUseQueryInfiniteConfig<TFunc extends AnyPromiseFunction, TConf
 /**
  * Represents the configuration options for the useMutation react hook.
  */
-export type IUseMutationConfig<TFunc extends AnyPromiseFunction, TConfig extends object | undefined> = IHookBaseConfig<TFunc, TConfig>;
+export type IUseMutationConfig<
+  TFunc extends AnyPromiseFunction,
+  TConfig extends object | undefined,
+  TResponse = Awaited<ReturnType<TFunc>>,
+> = IHookBaseConfig<TFunc, TConfig, TResponse>;
 
 export interface IWithProcessingResponse<TProcessingResponse> {
   /** The response returned by the global API processing hook */
@@ -187,11 +191,11 @@ export interface EndpointDefinition<
   /** Returns a `swr` mutate matcher function which will invalidate on the basis of "starts with" on the root cache key */
   startsWithInvalidator: (additionalCacheKey?: CacheKeyAdditionalValue) => (key?: Arguments) => boolean;
   /** A hook for performing GET queries - wrapped version of the `useSwr` hook returned from the SWR library, see here: https://swr.vercel.app */
-  useQuery: (config?: IUseQueryConfig<TFunc, TConfig>) => IUseQueryResponse<TFunc, TProcessingResponse>;
+  useQuery: (config?: IUseQueryConfig<TFunc, TConfig, TResponse>) => IUseQueryResponse<TFunc, TProcessingResponse, TResponse>;
   /** A hook for performing infinite loader GET queries - wrapped version of the `useInfiniteSwr` hook returned from the SWR library, see here: https://swr.vercel.app */
-  useInfiniteQuery: (config?: IUseQueryInfiniteConfig<TFunc, TConfig>) => IUseInfiniteQueryResponse<TFunc, TProcessingResponse>;
+  useInfiniteQuery: (config?: IUseQueryInfiniteConfig<TFunc, TConfig, TResponse>) => IUseInfiniteQueryResponse<TFunc, TProcessingResponse, TResponse>;
   /** A hook for performing POST/PATCH/PUT/DELETE mutations - interfaces with global processing. */
-  useMutation: (config?: IUseMutationConfig<TFunc, TConfig>) => IUseMutationResponse<TFunc, TProcessingResponse>;
+  useMutation: (config?: IUseMutationConfig<TFunc, TConfig, TResponse>) => IUseMutationResponse<TFunc, TProcessingResponse, TResponse>;
 }
 
 /**

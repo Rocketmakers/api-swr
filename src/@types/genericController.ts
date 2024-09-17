@@ -35,7 +35,7 @@ export interface IGenericControllerSetup<TConfig extends object | undefined, TPr
  */
 export type GenericApiControllerHooks<TApiController, TConfig extends object | undefined, TProcessingResponse> = {
   [TEndpointKey in keyof TApiController]: TApiController[TEndpointKey] extends AnyPromiseFunction
-    ? EndpointDefinition<TApiController[TEndpointKey], TConfig, TProcessingResponse, TApiController[TEndpointKey]>
+    ? EndpointDefinition<TApiController[TEndpointKey], TConfig, TProcessingResponse>
     : never;
 };
 
