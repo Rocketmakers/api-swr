@@ -25,7 +25,7 @@ import type { APIProcessingHook, FetchWrapper, FirstArg, GlobalFetchWrapperHook,
 export const useClientFetch = <TFunc extends (...args: Array<unknown>) => Promise<unknown>, TConfig extends object | undefined, TProcessingResponse>(
   endpointId: string,
   mode: HookRequestMode,
-  fetchConfigArg: TConfig | undefined,
+  fetchConfig: TConfig | undefined,
   fetcher: TFunc,
   paramsArg?: Partial<FirstArg<TFunc>>,
   useApProcessing?: APIProcessingHook<TProcessingResponse>,
@@ -38,7 +38,6 @@ export const useClientFetch = <TFunc extends (...args: Array<unknown>) => Promis
   const [stateParams, setStateParams] = React.useState<FirstArg<TFunc>>();
 
   const params = useContentMemo(paramsArg);
-  const fetchConfig = useContentMemo(fetchConfigArg);
 
   const fetchWrapper = globalFetchWrapperHook?.();
 
