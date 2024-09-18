@@ -1,3 +1,10 @@
+## [1.5.2](https://github.com/Rocketmakers/api-swr/compare/v1.5.1...v1.5.2) (2024-09-18)
+
+
+### Bug Fixes
+
+* - Removes uneccessary content memo on fetch config so it can contain functions ([98a8ada](https://github.com/Rocketmakers/api-swr/commit/98a8ada9b20825b0493e711a60abcbcd2ffd6f16))
+
 ## [1.5.1](https://github.com/Rocketmakers/api-swr/compare/v1.5.0...v1.5.1) (2024-09-17)
 
 
