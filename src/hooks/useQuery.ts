@@ -1,3 +1,5 @@
+'use client';
+
 /*
  * React hook for querying data on the client
  * --------------------------------------
