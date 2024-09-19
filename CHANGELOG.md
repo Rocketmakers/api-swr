@@ -1,3 +1,10 @@
+## [1.5.3](https://github.com/Rocketmakers/api-swr/compare/v1.5.2...v1.5.3) (2024-09-19)
+
+
+### Bug Fixes
+
+* - Adds SSR use client directives for swr driven hooks ([2c3742b](https://github.com/Rocketmakers/api-swr/commit/2c3742b657621902f07365423576d6186760219f))
+
 ## [1.5.2](https://github.com/Rocketmakers/api-swr/compare/v1.5.1...v1.5.2) (2024-09-18)
 
 
