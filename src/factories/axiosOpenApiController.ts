@@ -9,7 +9,7 @@ import { Arguments } from 'swr';
 import { useClientFetch } from '../hooks/useClientFetch';
 import { useQuery } from '../hooks/useQuery';
 
-import { fixGeneratedClient, unwrapAxiosPromise } from '../utils/api';
+import { fixGeneratedClient, isAxiosResponse, processAxiosPromise } from '../utils/api';
 import { cacheKeyConcat } from '../utils/caching';
 import { useInfiniteQuery } from '../hooks/useInfiniteQuery';
 import type { IOpenApiControllerSetup, IAxiosOpenApiControllerFactory, BaseAPI, AxiosOpenApiControllerHooks } from '../@types/axiosOpenApiController';
@@ -24,8 +24,8 @@ import type { MockEndpoints, AnyPromiseFunction, CacheKeyAdditionalValue, Endpoi
  * @param {boolean} options.enableMocking - Will use mock endpoint definitions instead of calling out to the real API.
  * @param {APIProcessingHook} options.useApiProcessing - Optional processing hook for all client side fetches.
  * @param {GlobalFetchWrapperHook<TConfig>} options.useGlobalFetchWrapper - Optional fetch wrapper hook for all client side fetches.
- * @param {SWRConfiguration<UnwrapAxiosResponse<any> | undefined>} options.swrConfig - Additional config to send to SWR for all queries.
- * @param {SWRInfiniteConfiguration<UnwrapAxiosResponse<any> | undefined>} options.swrInfiniteConfig - Additional config to send to SWR for all infinite loader queries.
+ * @param {SWRConfiguration<any | undefined>} options.swrConfig - Additional config to send to SWR for all queries.
+ * @param {SWRInfiniteConfiguration<any | undefined>} options.swrInfiniteConfig - Additional config to send to SWR for all infinite loader queries.
  * @returns {IAxiosOpenApiControllerFactory} A library of controller factory methods that create state management tools for an OpenAPI controller.
  */
 export const axiosOpenApiControllerFactory = <TConfig, TProcessingResponse>({
@@ -80,17 +80,17 @@ export const axiosOpenApiControllerFactory = <TConfig, TProcessingResponse>({
     const endpoints = Object.keys(client).reduce<AxiosOpenApiControllerHooks<InstanceType<TClass>, TProcessingResponse>>(
       (memo, endpointKey) => {
         /**
-         * Fetch function for server/client side use, calls the OpenAPI fetcher and unwraps the axios response
+         * Fetch function for server/client side use, calls the OpenAPI fetcher and returns the axios response
          * @param args Whatever args have been passed to the fetch, this function doesn't need to know what they are
-         * @returns The unwrapped axios response data
+         * @returns The axios response
          */
         const fetch = async (...args: Array<unknown>) => {
           if (enableMocking) {
             const mockFunc = getMockEndpointFunction(endpointKey);
-            return unwrapAxiosPromise(() => mockFunc(...args));
+            return processAxiosPromise(() => mockFunc(...args));
           }
           const func = (client as Record<string, AnyPromiseFunction>)[endpointKey];
-          return unwrapAxiosPromise(() => func(...args));
+          return processAxiosPromise(() => func(...args));
         };
 
         /**
@@ -127,9 +127,12 @@ export const axiosOpenApiControllerFactory = <TConfig, TProcessingResponse>({
           fetch,
           cacheKey: cacheKeyGetter,
           startsWithInvalidator,
-          useQuery: (config) => useQuery(endpointId, fetch, config, useApiProcessing, useGlobalFetchWrapper, swrConfig),
-          useMutation: (config) =>
-            useClientFetch(
+          useQuery: (config) => {
+            const { data, ...rest } = useQuery(endpointId, fetch, config, useApiProcessing, useGlobalFetchWrapper, swrConfig);
+            return { ...rest, data: isAxiosResponse(data) ? data.data : data };
+          },
+          useMutation: (config) => {
+            const { data, ...rest } = useClientFetch(
               endpointId,
               'mutation',
               config?.fetchConfig,
@@ -138,8 +141,13 @@ export const axiosOpenApiControllerFactory = <TConfig, TProcessingResponse>({
               useApiProcessing,
               useGlobalFetchWrapper,
               config?.fetchWrapper
-            ),
-          useInfiniteQuery: (config) => useInfiniteQuery(endpointId, fetch, config, useApiProcessing, useGlobalFetchWrapper, swrInfiniteConfig),
+            );
+            return { ...rest, data: isAxiosResponse(data) ? data.data : data };
+          },
+          useInfiniteQuery: (config) => {
+            const { data, ...rest } = useInfiniteQuery(endpointId, fetch, config, useApiProcessing, useGlobalFetchWrapper, swrInfiniteConfig);
+            return { ...rest, data: data?.map((page) => (isAxiosResponse(page) ? page.data : page)) };
+          },
         };
 
         return { ...memo, [endpointKey]: endpointTools };

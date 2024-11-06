@@ -5,7 +5,6 @@
  */
 import { AxiosError, type AxiosResponse } from 'axios';
 import type { AnyPromiseFunction } from '../@types/global';
-import type { UnwrapAxiosResponse } from '../@types/axiosOpenApiController';
 
 /**
  * Checks whether an API response object is an Axios response.
@@ -13,7 +12,8 @@ import type { UnwrapAxiosResponse } from '../@types/axiosOpenApiController';
  * @returns {boolean} - A boolean indicating whether the API response object is an Axios response.
  * @template TResponse - The type of data returned by the Axios response.
  */
-export const isAxiosResponse = <TResponse>(response: AxiosResponse<TResponse> | TResponse): response is AxiosResponse<TResponse> => {
+export const isAxiosResponse = <TResponse>(response?: AxiosResponse<TResponse> | TResponse): response is AxiosResponse<TResponse> => {
+  if (!response) return false;
   const castResponse = response as AxiosResponse<TResponse>;
   return 'status' in castResponse && 'statusText' in castResponse;
 };
@@ -45,20 +45,19 @@ export const fixGeneratedClient = <T>(original: T): T => {
 };
 
 /**
- * Unwraps the data from an axios API response.
+ * Processes the data from an axios API response.
  * @async
- * @template TFunc - The function to execute and unwrap the response data from.
+ * @template TFunc - The function to execute and process.
  * @param {TFunc} func - The function to execute.
- * @returns {Promise<UnwrapAxiosResponse<TFunc>>} - The unwrapped data from the API response.
+ * @returns {Promise<ReturnType<TFunc>>} - The response from the API.
  * @throws {Error} - If the API response status is 400 or higher, an error with the response is thrown.
  */
-export const unwrapAxiosPromise = async <TFunc extends AnyPromiseFunction>(func: TFunc): Promise<UnwrapAxiosResponse<TFunc>> => {
-  const response: unknown = await func();
+export const processAxiosPromise = async <TFunc extends AnyPromiseFunction>(func: TFunc): Promise<ReturnType<TFunc>> => {
+  const response = await func();
   if (isAxiosResponse(response)) {
     if (response.status >= 400) {
       throw new AxiosError(response.statusText, response.status.toString(), response.config, response.request, response);
     }
-    return response.data as UnwrapAxiosResponse<TFunc>;
   }
-  return response as UnwrapAxiosResponse<TFunc>;
+  return response;
 };

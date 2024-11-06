@@ -67,10 +67,10 @@ export const createMockAxiosSuccessResponse = <T>(data: T, status = 200): AxiosR
  * @param status - The status code for the response. Defaults to 500.
  * @returns An AxiosResponse with a status of 500 (or the provided status) and an empty data object.
  */
-export const createMockAxiosErrorResponse = <T>(status = 500): AxiosResponse<T> => {
+export const createMockAxiosErrorResponse = <T>(status = 500, statusText = 'Error'): AxiosResponse<T> => {
   return createMockAxiosResponse({
     data: {} as T,
     status,
-    statusText: 'Error',
+    statusText,
   });
 };

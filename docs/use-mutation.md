@@ -79,10 +79,10 @@ The `useMutation` hook receives a configuration object with the following proper
 
 ## Returns
 
-| Property             | Description                                                                                                                                                                                                 |
-| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `processingResponse` | The response returned by the global API processing hook. See [here](api-processing.md) for more information                                                                                                 |
-| `clientFetch`        | The async function which performs the mutation. It takes `execParams` as the params for the request as a typed param object and returns a promise containing the unwrapped response data from the mutation. |
-| `isLoading`          | Whether the request is currently pending or not                                                                                                                                                             |
-| `data`               | The request response data if any                                                                                                                                                                            |
-| `error`              | The request response error if any                                                                                                                                                                           |
+| Property             | Description                                                                                                                                                                                       |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `processingResponse` | The response returned by the global API processing hook. See [here](api-processing.md) for more information                                                                                       |
+| `clientFetch`        | The async function which performs the mutation. It takes `execParams` as the params for the request as a typed param object and returns a promise containing the response data from the mutation. |
+| `isLoading`          | Whether the request is currently pending or not                                                                                                                                                   |
+| `data`               | The request response data if any                                                                                                                                                                  |
+| `error`              | The request response error if any                                                                                                                                                                 |

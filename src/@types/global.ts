@@ -153,18 +153,22 @@ export type IUseInfiniteQueryResponse<
 /**
  * Represents the response from the `useMutation` react hook.
  */
-export interface IUseMutationResponse<TFunc extends AnyPromiseFunction, TProcessingResponse, TResponse = Awaited<ReturnType<TFunc>>>
-  extends IWithProcessingResponse<TProcessingResponse> {
+export interface IUseMutationResponse<
+  TFunc extends AnyPromiseFunction,
+  TProcessingResponse,
+  TRawResponse = Awaited<ReturnType<TFunc>>,
+  TDataResponse = Awaited<ReturnType<TFunc>>,
+> extends IWithProcessingResponse<TProcessingResponse> {
   /**
    * The async function which performs the mutation.
    * @param execParams - The params for the request as a typed param object.
-   * @returns A promise containing the unwrapped response data from the mutation
+   * @returns A promise containing the response data from the mutation
    */
-  clientFetch: (execParams?: Partial<FirstArg<TFunc>>) => Promise<TResponse | undefined>;
+  clientFetch: (execParams?: Partial<FirstArg<TFunc>>) => Promise<TRawResponse | undefined>;
   /** Whether the request is currently pending or not */
   isLoading: boolean;
   /** The request response data if any */
-  data?: TResponse;
+  data?: TDataResponse;
   /** The request response error if any */
   error?: unknown;
 }
@@ -176,7 +180,8 @@ export interface EndpointDefinition<
   TFunc extends AnyPromiseFunction,
   TConfig extends object | undefined,
   TProcessingResponse,
-  TResponse = Awaited<ReturnType<TFunc>>,
+  TRawResponse = Awaited<ReturnType<TFunc>>,
+  TDataResponse = Awaited<ReturnType<TFunc>>,
 > {
   /** The string name given to the controller - used as the first part of the cache key for data separation */
   controllerKey: string;
@@ -185,17 +190,21 @@ export interface EndpointDefinition<
   /** The `controller.endpoint` format endpoint ID of the request */
   endpointId: string;
   /** The fetch method for actually requesting the data from the API */
-  fetch: (params?: FirstArg<TFunc>, config?: TConfig) => Promise<TResponse>;
+  fetch: (params?: FirstArg<TFunc>, config?: TConfig) => Promise<TRawResponse>;
   /** Returns the cacheKey specific to the controller/endpoint with an optional addition, in the format: `controllerKey.endpointKey.additionalCacheKey` */
   cacheKey: (additionalCacheKey?: CacheKeyAdditionalValue) => string;
   /** Returns a `swr` mutate matcher function which will invalidate on the basis of "starts with" on the root cache key */
   startsWithInvalidator: (additionalCacheKey?: CacheKeyAdditionalValue) => (key?: Arguments) => boolean;
   /** A hook for performing GET queries - wrapped version of the `useSwr` hook returned from the SWR library, see here: https://swr.vercel.app */
-  useQuery: (config?: IUseQueryConfig<TFunc, TConfig, TResponse>) => IUseQueryResponse<TFunc, TProcessingResponse, TResponse>;
+  useQuery: (config?: IUseQueryConfig<TFunc, TConfig, TRawResponse>) => IUseQueryResponse<TFunc, TProcessingResponse, TDataResponse>;
   /** A hook for performing infinite loader GET queries - wrapped version of the `useInfiniteSwr` hook returned from the SWR library, see here: https://swr.vercel.app */
-  useInfiniteQuery: (config?: IUseQueryInfiniteConfig<TFunc, TConfig, TResponse>) => IUseInfiniteQueryResponse<TFunc, TProcessingResponse, TResponse>;
+  useInfiniteQuery: (
+    config?: IUseQueryInfiniteConfig<TFunc, TConfig, TRawResponse>
+  ) => IUseInfiniteQueryResponse<TFunc, TProcessingResponse, TDataResponse>;
   /** A hook for performing POST/PATCH/PUT/DELETE mutations - interfaces with global processing. */
-  useMutation: (config?: IUseMutationConfig<TFunc, TConfig, TResponse>) => IUseMutationResponse<TFunc, TProcessingResponse, TResponse>;
+  useMutation: (
+    config?: IUseMutationConfig<TFunc, TConfig, TRawResponse>
+  ) => IUseMutationResponse<TFunc, TProcessingResponse, TRawResponse, TDataResponse>;
 }
 
 /**
