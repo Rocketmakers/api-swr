@@ -1,3 +1,15 @@
+# [2.0.0](https://github.com/Rocketmakers/api-swr/compare/v1.5.3...v2.0.0) (2024-11-06)
+
+
+### Features
+
+* - awaited fetches now return the whole axios response ([fe8a7f1](https://github.com/Rocketmakers/api-swr/commit/fe8a7f1c324ad036b6abaa14a155d14fabc04abc))
+
+
+### BREAKING CHANGES
+
+* This changes the response from all awaited fetches
+
 ## [1.5.3](https://github.com/Rocketmakers/api-swr/compare/v1.5.2...v1.5.3) (2024-09-19)
 
 

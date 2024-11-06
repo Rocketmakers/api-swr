@@ -1,6 +1,6 @@
 {
   "name": "@rocketmakers/api-swr",
-  "version": "1.5.3",
+  "version": "2.0.0",
   "description": "Rocketmakers front-end library for parsing a generated Typescript API client into a set of configurable React hooks for fetching and mutating data.",
   "main": "./dist/index.js",
   "module": "./dist/esm/index.js",
