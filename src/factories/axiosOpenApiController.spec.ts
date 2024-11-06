@@ -2,31 +2,23 @@ import type { AxiosResponse } from 'axios';
 
 import { fixGeneratedClient } from '../utils/api';
 import { cacheKeyConcat } from '../utils/caching';
-import { createMockAxiosSuccessResponse } from '../utils/mocking';
+import { createMockAxiosErrorResponse, createMockAxiosSuccessResponse } from '../utils/mocking';
 
 import { axiosOpenApiControllerFactory } from './axiosOpenApiController';
 import { IOpenApiControllerSetup } from '../@types/axiosOpenApiController';
 
+/** mock responses */
+const successResponse = createMockAxiosSuccessResponse({ test: 'OK' });
+const errorResponse = createMockAxiosErrorResponse(500, 'Unexpected error');
+
 /** mock OpenAPI controller */
 class MockApi {
   testGetSuccess(): Promise<AxiosResponse<{ test: string }>> {
-    return Promise.resolve({
-      status: 200,
-      data: { test: 'OK' },
-      statusText: 'OK',
-      config: {} as AxiosResponse['config'],
-      headers: {} as AxiosResponse['headers'],
-    });
+    return Promise.resolve(successResponse);
   }
 
   testGetError(): Promise<AxiosResponse<unknown>> {
-    return Promise.resolve({
-      status: 500,
-      data: undefined,
-      statusText: 'Unexpected error',
-      config: {} as AxiosResponse['config'],
-      headers: {} as AxiosResponse['headers'],
-    });
+    return Promise.resolve(errorResponse);
   }
 }
 
@@ -155,7 +147,7 @@ describe('axiosOpenApiControllerFactory', () => {
   });
 
   it('should create a fetch function which fetches the data successfully when executed', async () => {
-    await expect(controllerHooks.testGetSuccess.fetch()).resolves.toEqual({ test: 'OK' });
+    await expect(controllerHooks.testGetSuccess.fetch()).resolves.toEqual(successResponse);
   });
 
   it('should create a fetch function which handles errors appropriately when executed', async () => {
@@ -170,7 +162,7 @@ describe('axiosOpenApiControllerFactory', () => {
         return createMockAxiosSuccessResponse({ test: 'mocked-test' });
       },
     });
-    await expect(mockedControllerHooks.testGetSuccess.fetch()).resolves.toEqual({ test: 'mocked-test' });
+    await expect(mockedControllerHooks.testGetSuccess.fetch()).resolves.toEqual({ ...successResponse, data: { test: 'mocked-test' } });
   });
 
   it('should throw an error when trying to fetch from an undefined mock endpoint', async () => {

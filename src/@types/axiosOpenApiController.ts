@@ -3,7 +3,7 @@
  * --------------------------------------
  * All TypeScript only types and interfaces
  */
-import type { AxiosRequestConfig } from 'axios';
+import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 import type { SWRConfiguration } from 'swr';
 import type { SWRInfiniteConfiguration } from 'swr/infinite';
 import type { APIProcessingHook, AnyPromiseFunction, EndpointDefinition, GlobalFetchWrapperHook, MockEndpoints } from './global';
@@ -22,18 +22,18 @@ export interface IOpenApiControllerSetup<TConfig, TProcessingResponse> {
   /** Optional config to pass to the API constructor (type exported from the OpenAPI client) */
   openApiConfig?: TConfig;
   /** Additional config to send to SWR for all queries */
-  swrConfig?: SWRConfiguration<UnwrapAxiosResponse<any> | undefined>;
+  swrConfig?: SWRConfiguration<any | undefined>;
   /** Additional config to send to SWR for all infinite loader queries */
-  swrInfiniteConfig?: SWRInfiniteConfiguration<UnwrapAxiosResponse<any> | undefined>;
+  swrInfiniteConfig?: SWRInfiniteConfiguration<any | undefined>;
   /** Optional boolean to turn on mocked endpoints */
   enableMocking?: boolean;
   /** Optional processing hook for all client side fetches */
-  useApiProcessing?: APIProcessingHook<TProcessingResponse, UnwrapAxiosResponse<any>>;
+  useApiProcessing?: APIProcessingHook<TProcessingResponse, any>;
   /** Optional wrapper for all client side fetches */
   useGlobalFetchWrapper?: GlobalFetchWrapperHook<
     AxiosRequestConfig,
-    (params: object, config: AxiosRequestConfig | undefined) => Promise<unknown>,
-    UnwrapAxiosResponse<unknown>
+    (params: object, config: AxiosRequestConfig | undefined) => Promise<AxiosResponse<any>>,
+    AxiosResponse<any>
   >;
 }
 
@@ -42,7 +42,13 @@ export interface IOpenApiControllerSetup<TConfig, TProcessingResponse> {
  */
 export type AxiosOpenApiControllerHooks<TApiController, TProcessingResponse> = {
   [TEndpointKey in keyof TApiController]: TApiController[TEndpointKey] extends AnyPromiseFunction
-    ? EndpointDefinition<TApiController[TEndpointKey], AxiosRequestConfig, TProcessingResponse, UnwrapAxiosResponse<TApiController[TEndpointKey]>>
+    ? EndpointDefinition<
+        TApiController[TEndpointKey],
+        AxiosRequestConfig,
+        TProcessingResponse,
+        Awaited<ReturnType<TApiController[TEndpointKey]>>,
+        UnwrapAxiosResponse<TApiController[TEndpointKey]>
+      >
     : never;
 };
 

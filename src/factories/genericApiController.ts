@@ -76,9 +76,9 @@ export const genericApiControllerFactory = <TConfig extends object | undefined, 
     const endpoints = Object.keys(controller).reduce<GenericApiControllerHooks<TController, TConfig, TProcessingResponse>>(
       (memo, endpointKey) => {
         /**
-         * Fetch function for server/client side use, calls the fetcher and unwraps the axios response
+         * Fetch function for server/client side use, calls the fetcher
          * @param args Whatever args have been passed to the fetch, this function doesn't need to know what they are
-         * @returns The unwrapped axios response data
+         * @returns The response data
          */
         const fetch = async (...args: Array<unknown>) => {
           if (enableMocking) {

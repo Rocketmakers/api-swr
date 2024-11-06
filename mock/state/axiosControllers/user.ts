@@ -81,7 +81,7 @@ export const useUpdateUser = () => {
       const response = await clientFetch({ id, data: user });
       if (response) {
         await invalidate(userApi.getUserList.cacheKey());
-        await invalidate(userApi.getUser.cacheKey(response.id));
+        await invalidate(userApi.getUser.cacheKey(response.data.id));
       }
       return response;
     },

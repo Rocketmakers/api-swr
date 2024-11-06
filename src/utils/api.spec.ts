@@ -1,6 +1,6 @@
 import { AxiosError, type AxiosResponse } from 'axios';
 
-import { fixGeneratedClient, isAxiosError, isAxiosResponse, unwrapAxiosPromise } from './api';
+import { fixGeneratedClient, isAxiosError, isAxiosResponse, processAxiosPromise } from './api';
 
 /**
  * isAxiosResponse
@@ -88,25 +88,14 @@ describe('fixGeneratedClient', () => {
 });
 
 /**
- * unwrapAxiosPromise
+ * processAxiosPromise
  */
-describe('unwrapAxiosPromise', () => {
-  it('should unwrap the data from an axios response when executed', async () => {
-    const data = { foo: 'bar' };
-    const response = { status: 200, data, statusText: 'OK' };
-    const mockFunc = jest.fn().mockResolvedValue(response);
-
-    const result = await unwrapAxiosPromise(mockFunc);
-
-    expect(mockFunc).toHaveBeenCalled();
-    expect(result).toEqual(data);
-  });
-
+describe('processAxiosPromise', () => {
   it('should throw an error if the response status is 400 or higher when executed', async () => {
     const response = { status: 404, statusText: 'Not Found' };
     const mockFunc = jest.fn().mockResolvedValue(Promise.resolve(response));
 
-    await expect(unwrapAxiosPromise(mockFunc)).rejects.toThrow('Not Found');
+    await expect(processAxiosPromise(mockFunc)).rejects.toThrow('Not Found');
     expect(mockFunc).toHaveBeenCalled();
   });
 
@@ -114,7 +103,7 @@ describe('unwrapAxiosPromise', () => {
     const data = { foo: 'bar' };
     const mockFunc = jest.fn().mockResolvedValue(data);
 
-    const result = await unwrapAxiosPromise(mockFunc);
+    const result = await processAxiosPromise(mockFunc);
 
     expect(mockFunc).toHaveBeenCalled();
     expect(result).toEqual(data);
