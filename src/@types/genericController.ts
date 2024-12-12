@@ -42,7 +42,7 @@ export type GenericApiControllerHooks<TApiController, TConfig extends object | u
 /**
  * Represents a type that extends the functionality of `ControllerHooks` by adding a method `registerMockEndpoints`.
  */
-type GenericApiControllerReturn<
+export type GenericApiControllerReturn<
   TConfig extends object | undefined,
   TController extends GenericController<TConfig>,
   TProcessingResponse,
