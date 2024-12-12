@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/Rocketmakers/api-swr/compare/v2.0.0...v2.0.1) (2024-12-12)
+
+
+### Bug Fixes
+
+* - Added missing type exports ([3c1fdb2](https://github.com/Rocketmakers/api-swr/commit/3c1fdb28f998db5013d54b52ed2e54f984649b16))
+
 # [2.0.0](https://github.com/Rocketmakers/api-swr/compare/v1.5.3...v2.0.0) (2024-11-06)
 
 
