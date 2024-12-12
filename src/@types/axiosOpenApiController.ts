@@ -55,7 +55,7 @@ export type AxiosOpenApiControllerHooks<TApiController, TProcessingResponse> = {
 /**
  * Represents a type that extends the functionality of `AxiosOpenApiControllerHooks` by adding a method `registerMockEndpoints`.
  */
-type AxiosOpenApiControllerReturn<TClass extends BaseAPI, TProcessingResponse> = AxiosOpenApiControllerHooks<
+export type AxiosOpenApiControllerReturn<TClass extends BaseAPI, TProcessingResponse> = AxiosOpenApiControllerHooks<
   InstanceType<TClass>,
   TProcessingResponse
 > & {
