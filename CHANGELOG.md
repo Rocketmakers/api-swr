@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/Rocketmakers/api-swr/compare/v2.0.1...v2.1.0) (2025-01-08)
+
+
+### Features
+
+* - Allows mocking to be switched on per hook rather than only globally ([b3f0ff9](https://github.com/Rocketmakers/api-swr/commit/b3f0ff9c493ad584870ee864bcfb487fa33bcd0a))
+
 ## [2.0.1](https://github.com/Rocketmakers/api-swr/compare/v2.0.0...v2.0.1) (2024-12-12)
 
 
