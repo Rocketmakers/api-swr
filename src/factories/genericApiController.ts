@@ -5,6 +5,7 @@
  */
 import { Arguments } from 'swr';
 
+import * as React from 'react';
 import { useClientFetch } from '../hooks/useClientFetch';
 import { useQuery } from '../hooks/useQuery';
 import { cacheKeyConcat } from '../utils/caching';
@@ -80,14 +81,16 @@ export const genericApiControllerFactory = <TConfig extends object | undefined, 
          * @param args Whatever args have been passed to the fetch, this function doesn't need to know what they are
          * @returns The response data
          */
-        const fetch = async (...args: Array<unknown>) => {
-          if (enableMocking) {
-            const mockFunc = getMockEndpointFunction(endpointKey);
-            return mockFunc(...args);
-          }
-          const func = (controller as Record<string, AnyPromiseFunction>)[endpointKey];
-          return func(...args);
-        };
+        const fetchFactory =
+          (enableMockingViaConfig?: boolean) =>
+          async (...args: Array<unknown>) => {
+            if (enableMocking || enableMockingViaConfig) {
+              const mockFunc = getMockEndpointFunction(endpointKey);
+              return mockFunc(...args);
+            }
+            const func = (controller as Record<string, AnyPromiseFunction>)[endpointKey];
+            return func(...args);
+          };
 
         /**
          * Retrieves the cache key for this specific endpoint
@@ -120,38 +123,45 @@ export const genericApiControllerFactory = <TConfig extends object | undefined, 
           controllerKey,
           endpointKey,
           endpointId: cacheKeyConcat(controllerKey, endpointKey),
-          fetch: (params, config) => fetch(params, combineConfigs({ fetchConfig: config }, globalFetchConfig, controllerConfig)?.fetchConfig),
+          fetch: (params, config) =>
+            fetchFactory()(params, combineConfigs({ fetchConfig: config }, globalFetchConfig, controllerConfig)?.fetchConfig),
           cacheKey: cacheKeyGetter,
           startsWithInvalidator,
-          useQuery: (config) =>
-            useQuery<AnyPromiseFunction, TConfig, TProcessingResponse>(
+          useQuery: (config) => {
+            const fetchOverride = React.useCallback((...args: unknown[]) => fetchFactory(config?.enableMocking)(...args), [fetchFactory]);
+            return useQuery<AnyPromiseFunction, TConfig, TProcessingResponse>(
               endpointId,
-              fetch,
+              fetchOverride,
               combineConfigs(config, globalFetchConfig, controllerConfig),
               useApiProcessing,
               useGlobalFetchWrapper,
               swrConfig
-            ),
-          useMutation: (config) =>
-            useClientFetch<AnyPromiseFunction, TConfig, TProcessingResponse>(
+            );
+          },
+          useMutation: (config) => {
+            const fetchOverride = React.useCallback((...args: unknown[]) => fetchFactory(config?.enableMocking)(...args), [fetchFactory]);
+            return useClientFetch<AnyPromiseFunction, TConfig, TProcessingResponse>(
               endpointId,
               'mutation',
               combineConfigs(config, globalFetchConfig, controllerConfig)?.fetchConfig,
-              fetch,
+              fetchOverride,
               config?.params,
               useApiProcessing,
               useGlobalFetchWrapper,
               config?.fetchWrapper
-            ),
-          useInfiniteQuery: (config) =>
-            useInfiniteQuery<AnyPromiseFunction, TConfig, TProcessingResponse>(
+            );
+          },
+          useInfiniteQuery: (config) => {
+            const fetchOverride = React.useCallback((...args: unknown[]) => fetchFactory(config?.enableMocking)(...args), [fetchFactory]);
+            return useInfiniteQuery<AnyPromiseFunction, TConfig, TProcessingResponse>(
               endpointId,
-              fetch,
+              fetchOverride,
               combineConfigs(config, globalFetchConfig, controllerConfig),
               useApiProcessing,
               useGlobalFetchWrapper,
               swrInfiniteConfig
-            ),
+            );
+          },
         };
 
         return { ...memo, [endpointKey]: endpointTools };

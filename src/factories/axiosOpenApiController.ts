@@ -6,6 +6,7 @@
 import type { AxiosRequestConfig } from 'axios';
 import { Arguments } from 'swr';
 
+import * as React from 'react';
 import { useClientFetch } from '../hooks/useClientFetch';
 import { useQuery } from '../hooks/useQuery';
 
@@ -84,14 +85,16 @@ export const axiosOpenApiControllerFactory = <TConfig, TProcessingResponse>({
          * @param args Whatever args have been passed to the fetch, this function doesn't need to know what they are
          * @returns The axios response
          */
-        const fetch = async (...args: Array<unknown>) => {
-          if (enableMocking) {
-            const mockFunc = getMockEndpointFunction(endpointKey);
-            return processAxiosPromise(() => mockFunc(...args));
-          }
-          const func = (client as Record<string, AnyPromiseFunction>)[endpointKey];
-          return processAxiosPromise(() => func(...args));
-        };
+        const fetchFactory =
+          (enableMockingViaConfig?: boolean) =>
+          async (...args: Array<unknown>) => {
+            if (enableMocking || enableMockingViaConfig) {
+              const mockFunc = getMockEndpointFunction(endpointKey);
+              return processAxiosPromise(() => mockFunc(...args));
+            }
+            const func = (client as Record<string, AnyPromiseFunction>)[endpointKey];
+            return processAxiosPromise(() => func(...args));
+          };
 
         /**
          * Retrieves the cache key for this specific endpoint
@@ -124,19 +127,21 @@ export const axiosOpenApiControllerFactory = <TConfig, TProcessingResponse>({
           controllerKey,
           endpointKey,
           endpointId: cacheKeyConcat(controllerKey, endpointKey),
-          fetch,
+          fetch: fetchFactory(),
           cacheKey: cacheKeyGetter,
           startsWithInvalidator,
           useQuery: (config) => {
-            const { data, ...rest } = useQuery(endpointId, fetch, config, useApiProcessing, useGlobalFetchWrapper, swrConfig);
+            const fetchOverride = React.useCallback((...args: unknown[]) => fetchFactory(config?.enableMocking)(...args), [fetchFactory]);
+            const { data, ...rest } = useQuery(endpointId, fetchOverride, config, useApiProcessing, useGlobalFetchWrapper, swrConfig);
             return { ...rest, data: isAxiosResponse(data) ? data.data : data };
           },
           useMutation: (config) => {
+            const fetchOverride = React.useCallback((...args: unknown[]) => fetchFactory(config?.enableMocking)(...args), [fetchFactory]);
             const { data, ...rest } = useClientFetch(
               endpointId,
               'mutation',
               config?.fetchConfig,
-              fetch,
+              fetchOverride,
               config?.params,
               useApiProcessing,
               useGlobalFetchWrapper,
@@ -145,7 +150,8 @@ export const axiosOpenApiControllerFactory = <TConfig, TProcessingResponse>({
             return { ...rest, data: isAxiosResponse(data) ? data.data : data };
           },
           useInfiniteQuery: (config) => {
-            const { data, ...rest } = useInfiniteQuery(endpointId, fetch, config, useApiProcessing, useGlobalFetchWrapper, swrInfiniteConfig);
+            const fetchOverride = React.useCallback((...args: unknown[]) => fetchFactory(config?.enableMocking)(...args), [fetchFactory]);
+            const { data, ...rest } = useInfiniteQuery(endpointId, fetchOverride, config, useApiProcessing, useGlobalFetchWrapper, swrInfiniteConfig);
             return { ...rest, data: data?.map((page) => (isAxiosResponse(page) ? page.data : page)) };
           },
         };

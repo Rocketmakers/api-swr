@@ -1,5 +1,6 @@
 import type { AxiosResponse } from 'axios';
 
+import { renderHook } from '@testing-library/react';
 import { fixGeneratedClient } from '../utils/api';
 import { cacheKeyConcat } from '../utils/caching';
 import { createMockAxiosErrorResponse, createMockAxiosSuccessResponse } from '../utils/mocking';
@@ -27,7 +28,8 @@ describe('axiosOpenApiControllerFactory', () => {
   const axiosOpenApiControllerFactoryParams: IOpenApiControllerSetup<any, any> = { basePath };
   const controllerKey = 'testControllerKey';
 
-  const controllerHooks = axiosOpenApiControllerFactory(axiosOpenApiControllerFactoryParams).createAxiosOpenApiController(controllerKey, MockApi);
+  const controller = axiosOpenApiControllerFactory(axiosOpenApiControllerFactoryParams);
+  const controllerHooks = controller.createAxiosOpenApiController(controllerKey, MockApi);
 
   const mockedController = axiosOpenApiControllerFactory({
     ...axiosOpenApiControllerFactoryParams,
@@ -163,6 +165,42 @@ describe('axiosOpenApiControllerFactory', () => {
       },
     });
     await expect(mockedControllerHooks.testGetSuccess.fetch()).resolves.toEqual({ ...successResponse, data: { test: 'mocked-test' } });
+  });
+
+  it('should call mock function when enableMocking is passed through query hook config', async () => {
+    const localMockControllerHooks = controller.createAxiosOpenApiController(controllerKey, MockApi);
+    const mockTestSuccess = jest.fn();
+    localMockControllerHooks.registerMockEndpoints({
+      // eslint-disable-next-line @typescript-eslint/require-await
+      testGetSuccess: mockTestSuccess,
+    });
+    renderHook(() => localMockControllerHooks.testGetSuccess.useQuery({ enableMocking: true, params: { hello: 'test-query' } }));
+    expect(mockTestSuccess).toHaveBeenCalledWith({ hello: 'test-query' }, undefined);
+  });
+
+  it('should call mock function when enableMocking is passed through infinite query hook config', async () => {
+    const localMockControllerHooks = controller.createAxiosOpenApiController(controllerKey, MockApi);
+    const mockTestSuccess = jest.fn();
+    localMockControllerHooks.registerMockEndpoints({
+      // eslint-disable-next-line @typescript-eslint/require-await
+      testGetSuccess: mockTestSuccess,
+    });
+    renderHook(() => localMockControllerHooks.testGetSuccess.useInfiniteQuery({ enableMocking: true, params: () => ({ hello: 'test-query' }) }));
+    expect(mockTestSuccess).toHaveBeenCalledWith({ hello: 'test-query' }, undefined);
+  });
+
+  it('should call mock function when enableMocking is passed through mutation hook config', async () => {
+    const localMockControllerHooks = controller.createAxiosOpenApiController(controllerKey, MockApi);
+    const mockTestSuccess = jest.fn();
+    localMockControllerHooks.registerMockEndpoints({
+      // eslint-disable-next-line @typescript-eslint/require-await
+      testGetSuccess: mockTestSuccess,
+    });
+    const { result } = renderHook(() =>
+      localMockControllerHooks.testGetSuccess.useMutation({ enableMocking: true, params: { hello: 'test-mutation' } })
+    );
+    await result.current.clientFetch();
+    expect(mockTestSuccess).toHaveBeenCalledWith({ hello: 'test-mutation' }, undefined);
   });
 
   it('should throw an error when trying to fetch from an undefined mock endpoint', async () => {

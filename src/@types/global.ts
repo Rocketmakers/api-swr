@@ -96,6 +96,8 @@ export interface IHookBaseConfig<TFunc extends AnyPromiseFunction, TConfig exten
    * NOTE: This will be called in place of any supplied global fetch wrapper for maximum flexibility. If you want to use the global fetch wrapper, you must call it manually within the wrapper passed here.
    * */
   fetchWrapper?: FetchWrapper<TFunc, TConfig, TResponse>;
+  /** Enables mocking for this hook only */
+  enableMocking?: boolean;
 }
 
 /**
