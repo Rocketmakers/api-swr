@@ -40,7 +40,7 @@ describe('readCacheKey', () => {
   });
 
   it('should return cache key built when executed with a function', () => {
-    const cacheKey = (params?: { id: number; name: string }) => `${params?.id}-${params?.name}`;
+    const cacheKey = (params?: { id?: number; name?: string }) => `${params?.id}-${params?.name}`;
     const result = readCacheKey('endpoint', cacheKey, { id: 123, name: 'test' });
     expect(result).toEqual('endpoint.123-test');
   });
