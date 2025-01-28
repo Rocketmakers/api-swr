@@ -23,7 +23,7 @@ export const cacheKeyConcat = (...args: Array<string | undefined>): string => {
  * @param {TArgs} [params] - The parameters for the API call.
  * @returns {string|undefined} - The final concatenated cache key, or undefined if the cache key params are not all present.
  */
-export const readCacheKey = <TArgs>(endpointId?: string, cacheKey?: CacheKey<TArgs>, params?: TArgs): string | undefined => {
+export const readCacheKey = <TArgs>(endpointId?: string, cacheKey?: CacheKey<TArgs>, params?: Partial<TArgs>): string | undefined => {
   switch (typeof cacheKey) {
     case 'function':
       const funcResult = cacheKey(params);
@@ -32,14 +32,14 @@ export const readCacheKey = <TArgs>(endpointId?: string, cacheKey?: CacheKey<TAr
       }
       return cacheKeyConcat(endpointId, funcResult);
     case 'string':
-      const lookupResult = `${(params?.[cacheKey] as string | undefined) ?? ''}`;
+      const lookupResult = `${(params?.[cacheKey as string] as string | undefined) ?? ''}`;
       if (!lookupResult) {
         return undefined;
       }
       return cacheKeyConcat(endpointId, lookupResult);
     case 'object':
       if (Array.isArray(cacheKey)) {
-        const lookupResults = cacheKey.map((key) => `${(params?.[key] as string | undefined) ?? ''}`).filter((key) => !!key);
+        const lookupResults = cacheKey.map((key) => `${(params?.[key as string] as string | undefined) ?? ''}`).filter((key) => !!key);
         return cacheKeyConcat(endpointId, ...lookupResults);
       }
       return undefined;

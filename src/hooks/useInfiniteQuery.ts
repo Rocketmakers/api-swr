@@ -60,7 +60,7 @@ export const useInfiniteQuery = <
   const cacheKeyValue = React.useCallback(
     (index: number, prevData?: any) => {
       const finalParams = hookConfig?.params?.(index, prevData);
-      return [readCacheKey<Partial<FirstArg<TFunc>>>(endpointId, hookConfig?.cacheKey, finalParams), finalParams];
+      return [readCacheKey<FirstArg<TFunc>>(endpointId, hookConfig?.cacheKey, finalParams), finalParams];
     },
     [hookConfig?.cacheKey, hookConfig?.params, endpointId]
   );

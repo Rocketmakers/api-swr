@@ -79,7 +79,7 @@ export type APIProcessingHook<TProcessingResponse, TData = unknown> = (params: I
 /**
  * Represents the cache key for an API endpoint. It can be a string param key, an array of param keys, or a function that generates the key from params.
  */
-export type CacheKey<TArgs> = keyof TArgs | Array<keyof TArgs> | ((params?: TArgs) => string);
+export type CacheKey<TArgs> = keyof Required<NonNullable<TArgs>> | Array<keyof Required<NonNullable<TArgs>>> | ((params?: Partial<TArgs>) => string);
 
 /**
  * Represents the additional cache key argument that can be added to a `cacheKey` getter function.
@@ -106,7 +106,7 @@ export interface IHookBaseConfig<TFunc extends AnyPromiseFunction, TConfig exten
 export interface IUseQueryConfig<TFunc extends AnyPromiseFunction, TConfig extends object | undefined, TResponse = Awaited<ReturnType<TFunc>>>
   extends IHookBaseConfig<TFunc, TConfig, TResponse> {
   /** The cache key to store the response against, it can be a string param key, an array of param keys, or a function that generates the key from params. */
-  cacheKey?: CacheKey<Partial<FirstArg<TFunc>>>;
+  cacheKey?: CacheKey<FirstArg<TFunc>>;
   /** Additional config to send to SWR (like settings or fallback data for SSR) */
   swrConfig?: SWRConfiguration<TResponse | undefined>;
   /** If this property is false, the query fetch will wait until it becomes true or undefined. Useful for holding back queries until conditions are met */

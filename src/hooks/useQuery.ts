@@ -57,7 +57,7 @@ export const useQuery = <TFunc extends (...args: Array<unknown>) => Promise<unkn
     if (hookConfig?.waitFor === false) {
       return undefined;
     }
-    return readCacheKey<Partial<FirstArg<TFunc>>>(endpointId, hookConfig?.cacheKey, hookConfig?.params);
+    return readCacheKey<FirstArg<TFunc>>(endpointId, hookConfig?.cacheKey, hookConfig?.params);
   }, [hookConfig?.cacheKey, hookConfig?.params, hookConfig?.waitFor, endpointId]);
 
   /** Protect the root fetcher from causing dependency changes in SWR */
