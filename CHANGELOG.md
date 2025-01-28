@@ -1,3 +1,10 @@
+## [2.1.1](https://github.com/Rocketmakers/api-swr/compare/v2.1.0...v2.1.1) (2025-01-28)
+
+
+### Bug Fixes
+
+* - Fixes cache key typing bug on TSOA clients with all optional params ([d1f8a19](https://github.com/Rocketmakers/api-swr/commit/d1f8a19fa3c2ae6be6127fb5e1565971bb9a1b84))
+
 # [2.1.0](https://github.com/Rocketmakers/api-swr/compare/v2.0.1...v2.1.0) (2025-01-08)
 
 
