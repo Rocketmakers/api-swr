@@ -114,7 +114,7 @@ export const useGetUser = (id: string, role: Role) => {
 
 _WHAT'S THE FINAL CACHE KEY VALUE?: Assuming the `id` parameter in the above example is `1`, and the `role` parameter is `administrator`, the final cache key value for this query will be `user.getUser.administrator-1`. Please see the above "The anatomy of a cache key value" section to understand what this means._
 
-## The mutate function - Validating the State
+## The invalidate function - Validating the State
 
 When performing a mutation which results in a data change, it's important to invalidate any associated state from a [useQuery](use-query.md) or [useInfiniteQuery](use-infinite-query.md).
 
@@ -122,7 +122,7 @@ Take for example the below user update mutation hook. We _know_ that a successfu
 
 ```TypeScript
 export const useUpdateUser = () => {
-  const { mutate: invalidate } = useSWRConfig();
+  const { invalidate } = useCacheManager();
   const { clientFetch, ...rest } = userApi.updateUser.useMutation();
 
   const updateUser = React.useCallback(async (user: IUser) => {
@@ -146,6 +146,32 @@ Invalidating cache does one of two things depending on whether the newly invalid
 
 1. **Data is currently being rendered at invalidation time**: This will cause an immediate refetch from the server on the query in question.
 2. **Data is not being rendered at invalidation time**: This will invalidate the cached data behind the scenes, and force a refetch from the server the next time the data is used.
+
+### Invalidating an infinite query
+
+SWR doesn't handle global invalidations of infinite queries very well. Luckily, API-SWR has you covered by providing a special invalidation hook designed for infinite queries. This hook only requires the `cacheKey`, ne need to worry about `startsWithInvalidator` here:
+
+```TypeScript
+export const useUpdateUser = () => {
+  const { invalidateInfinite, invalidate } = useCacheManager();
+  const { clientFetch, ...rest } = userApi.updateUser.useMutation();
+
+  const updateUser = React.useCallback(async (user: IUser) => {
+    // run the user update
+    const response = await clientFetch({ user });
+    // if it was successful
+    if (response.data) {
+      // invalidate all cache associated with the `getUsers` infinite list query
+      invalidateInfinite(userApi.getUsers.cacheKey());
+      // invalidate all cache associated with the specific user that's been updated (based on their cache key)
+      invalidate(userApi.getUser.cacheKey(response.data.id));
+    }
+    return response;
+  }, [clientFetch]);
+
+  return { updateUser, ...rest };
+};
+```
 
 ### Knowing what to invalidate
 
@@ -179,7 +205,7 @@ invalidate(userApi.getUser.cacheKey(response.data.id))
 
 This will invalidate the cache for a specific user within a specific endpoint.
 
-#### For all data that starts with a cache key value
+#### For all data that starts with a cache key value (not relevant for infinite queries)
 
 The `startsWithInvalidator` function available on on each endpoint works in exactly the same way as the `cacheKey` function, but it allows you to invalidate all cached data with a cache key that **starts with** the supplied cache key. This is particularly useful for paged endpoints for which the page number is supplied as a cacheKey parameter, but you want to invalidate _all_ pages.
 
@@ -190,6 +216,23 @@ invalidate(userApi.getUsers.startsWithInvalidator())
 ```
 
 This will invalidate all pages of our paged `user.getUsers` endpoint.
+
+## Clearing all cache
+
+The `useCacheManager` hook provides a method for clearing all cache associated with your app (usually called on logout or similar context reset scenarios). Here's an example:
+
+```TypeScript
+const { clearAll } = useCacheManager();
+
+const logout = React.useCallback(() => {
+  clearAll();
+}, []);
+```
+
+## Other tools returned by `useCacheManager`
+
+- `mutateInfinite` - similar to `invalidateInfinite` but also supports the other arguments on the [SWR global mutate](https://swr.vercel.app/docs/mutation#global-mutate) for more advanced cache management.
+- The `useCacheManager` hook also returns everything returned by the SWR `useSWRConfig` for full control over your cache.
 
 ## SWR Documentation
 

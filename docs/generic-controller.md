@@ -10,10 +10,9 @@
 The below example shows a `userApi` controller alongside a set of example CRUD endpoint hooks.
 
 ```TypeScript
-import { pagingConfig } from "@rocketmakers/api-swr"
+import { pagingConfig, useCacheManager } from "@rocketmakers/api-swr"
 import { apiFactory } from "../controllerFactory.ts"
 import { userApi } from "example-api-client";
-import { useSWRConfig } from 'swr';
 
 /** CONTROLLER **/
 
@@ -37,7 +36,7 @@ export const useGetUser = (userId: string) => {
 };
 
 export const useCreateUser = () => {
-  const { mutate: invalidate } = useSWRConfig();
+  const { invalidate } = useCacheManager();
   const { clientFetch, ...rest } = userApi.createUser.useMutation();
 
   const createUser = React.useCallback(async (user: ICreateUser) => {
@@ -52,7 +51,7 @@ export const useCreateUser = () => {
 };
 
 export const useUpdateUser = () => {
-  const { mutate: invalidate } = useSWRConfig();
+  const { invalidate } = useCacheManager();
   const { clientFetch, ...rest } = userApi.updateUser.useMutation();
 
   const updateUser = React.useCallback(async (user: IUser) => {
@@ -68,7 +67,7 @@ export const useUpdateUser = () => {
 };
 
 export const useDeleteUser = () => {
-  const { mutate: invalidate } = useSWRConfig();
+  const { invalidate } = useCacheManager();
   const { clientFetch, ...rest } = userApi.deleteUser.useMutation();
 
   const deleteUser = React.useCallback(async (id: string) => {
