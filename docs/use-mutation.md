@@ -11,7 +11,7 @@ Like all API SWR endpoint hooks, the `useMutation` hook _can_ be consumed direct
 
 ```TypeScript
 export const useUpdateUser = () => {
-  const { mutate: invalidate } = useSWRConfig();
+  const { invalidate } = useCacheManager();
   const { clientFetch, ...rest } = userApi.updateUser.useMutation();
 
   const updateUser = React.useCallback(async (user: IUser) => {
