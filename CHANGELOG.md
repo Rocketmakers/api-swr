@@ -1,3 +1,10 @@
+# [2.2.0](https://github.com/Rocketmakers/api-swr/compare/v2.1.1...v2.2.0) (2025-03-27)
+
+
+### Features
+
+* - UseCacheManager toolkit added ([7c14054](https://github.com/Rocketmakers/api-swr/commit/7c1405475fcc9eb9aa2955247ea212248eee8fa7))
+
 ## [2.1.1](https://github.com/Rocketmakers/api-swr/compare/v2.1.0...v2.1.1) (2025-01-28)
 
 
