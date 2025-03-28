@@ -1,3 +1,10 @@
+## [2.2.1](https://github.com/Rocketmakers/api-swr/compare/v2.2.0...v2.2.1) (2025-03-28)
+
+
+### Bug Fixes
+
+* - Cache manager export added ([0105f84](https://github.com/Rocketmakers/api-swr/commit/0105f848ff2ad6d2199ed51ac1c1b50bcb52d712))
+
 # [2.2.0](https://github.com/Rocketmakers/api-swr/compare/v2.1.1...v2.2.0) (2025-03-27)
 
 
