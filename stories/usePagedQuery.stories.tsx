@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Button } from '@rocketmakers/armstrong';
 import { createMeta } from '../_test/storybook/utils';
 import { useGetUsersPaged as axiosQuery } from '../mock/state/axiosControllers/user';
 import { useGetUsersPaged as genericQuery } from '../mock/state/genericControllers/user';
@@ -33,13 +32,13 @@ export const AxiosController = () => {
           </tbody>
         )}
       </table>
-      <Button onClick={() => setPage((s) => s - 1)} disabled={page === 1}>
+      <button onClick={() => setPage((s) => s - 1)} disabled={page === 1}>
         Prev
-      </Button>
+      </button>
       <div>Current page: {page}</div>
-      <Button onClick={() => setPage((s) => s + 1)} disabled={page === totalPages}>
+      <button onClick={() => setPage((s) => s + 1)} disabled={page === totalPages}>
         Next
-      </Button>
+      </button>
     </div>
   );
 };
@@ -73,13 +72,13 @@ export const GenericController = () => {
           </tbody>
         )}
       </table>
-      <Button onClick={() => setPage((s) => s - 1)} disabled={page === 1}>
+      <button onClick={() => setPage((s) => s - 1)} disabled={page === 1}>
         Prev
-      </Button>
+      </button>
       <div>Current page: {page}</div>
-      <Button onClick={() => setPage((s) => s + 1)} disabled={page === totalPages}>
+      <button onClick={() => setPage((s) => s + 1)} disabled={page === totalPages}>
         Next
-      </Button>
+      </button>
     </div>
   );
 };

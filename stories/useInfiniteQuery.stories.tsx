@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Button } from '@rocketmakers/armstrong';
 import { createMeta } from '../_test/storybook/utils';
 import { useGetUsersInfinite as axiosQuery } from '../mock/state/axiosControllers/user';
 import { useGetUsersInfinite as genericQuery } from '../mock/state/genericControllers/user';
@@ -32,9 +31,9 @@ export const AxiosController = () => {
           </tbody>
         )}
       </table>
-      <Button onClick={() => setPage((s) => s + 1)} disabled={page === totalPages}>
+      <button onClick={() => setPage((s) => s + 1)} disabled={page === totalPages}>
         Load more
-      </Button>
+      </button>
       <div>Current page: {page}</div>
     </div>
   );
@@ -66,9 +65,9 @@ export const GenericController = () => {
           </tbody>
         )}
       </table>
-      <Button onClick={() => setPage((s) => s + 1)} disabled={page === totalPages}>
+      <button onClick={() => setPage((s) => s + 1)} disabled={page === totalPages}>
         Load more
-      </Button>
+      </button>
       <div>Current page: {page}</div>
     </div>
   );

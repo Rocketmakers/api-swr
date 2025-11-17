@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { Button } from '@rocketmakers/armstrong';
 import { createMeta } from '../_test/storybook/utils';
 import { useGetUsers as axiosQuery } from '../mock/state/axiosControllers/user';
 import { useGetUsers as genericQuery } from '../mock/state/genericControllers/user';
@@ -30,9 +29,7 @@ export const AxiosController = () => {
           </tbody>
         )}
       </table>
-      <Button pending={isLoading || isValidating} onClick={() => invalidate()}>
-        Refetch
-      </Button>
+      <button onClick={() => invalidate()}>Refetch</button>
     </div>
   );
 };
@@ -63,9 +60,7 @@ export const GenericController = () => {
           </tbody>
         )}
       </table>
-      <Button pending={isLoading || isValidating} onClick={() => invalidate()}>
-        Refetch
-      </Button>
+      <button onClick={() => invalidate()}>Refetch</button>
     </div>
   );
 };
