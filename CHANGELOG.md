@@ -1,3 +1,10 @@
+## [2.2.2](https://github.com/Rocketmakers/api-swr/compare/v2.2.1...v2.2.2) (2025-11-17)
+
+
+### Bug Fixes
+
+* upgraded to latest armstrong in devdeps ([fc83878](https://github.com/Rocketmakers/api-swr/commit/fc8387845c2e762ebf97f9a1f3bf7f53a971d9c1))
+
 ## [2.2.1](https://github.com/Rocketmakers/api-swr/compare/v2.2.0...v2.2.1) (2025-03-28)
 
 
