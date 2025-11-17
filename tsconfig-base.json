@@ -5,6 +5,8 @@
     "isolatedModules": false,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
     "jsx": "react",
     "declaration": false,
     "noImplicitAny": false,
