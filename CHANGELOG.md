@@ -1,3 +1,10 @@
+## [2.2.3](https://github.com/Rocketmakers/api-swr/compare/v2.2.2...v2.2.3) (2025-11-17)
+
+
+### Bug Fixes
+
+* remove armstrong completely ([799b533](https://github.com/Rocketmakers/api-swr/commit/799b53367b61decb9f789d2f5d3d5e29708dcde8))
+
 ## [2.2.2](https://github.com/Rocketmakers/api-swr/compare/v2.2.1...v2.2.2) (2025-11-17)
 
 
