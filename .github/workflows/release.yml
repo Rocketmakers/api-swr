@@ -16,12 +16,14 @@ jobs:
         uses: actions/setup-node@main
         with:
           node-version: 20.11.0
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
       - name: Install dependencies
-        run: npm i
+        run: pnpm install --frozen-lockfile
       - name: build
-        run: npm run build
+        run: pnpm run build
       - name: test
-        run: npm test
+        run: pnpm run test
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
