@@ -103,8 +103,11 @@ export interface IHookBaseConfig<TFunc extends AnyPromiseFunction, TConfig exten
 /**
  * Represents the configuration options for the useQuery react hook.
  */
-export interface IUseQueryConfig<TFunc extends AnyPromiseFunction, TConfig extends object | undefined, TResponse = Awaited<ReturnType<TFunc>>>
-  extends IHookBaseConfig<TFunc, TConfig, TResponse> {
+export interface IUseQueryConfig<
+  TFunc extends AnyPromiseFunction,
+  TConfig extends object | undefined,
+  TResponse = Awaited<ReturnType<TFunc>>,
+> extends IHookBaseConfig<TFunc, TConfig, TResponse> {
   /** The cache key to store the response against, it can be a string param key, an array of param keys, or a function that generates the key from params. */
   cacheKey?: CacheKey<FirstArg<TFunc>>;
   /** Additional config to send to SWR (like settings or fallback data for SSR) */
@@ -113,8 +116,11 @@ export interface IUseQueryConfig<TFunc extends AnyPromiseFunction, TConfig exten
   waitFor?: boolean;
 }
 
-export interface IUseQueryInfiniteConfig<TFunc extends AnyPromiseFunction, TConfig extends object | undefined, TResponse = Awaited<ReturnType<TFunc>>>
-  extends Omit<IUseQueryConfig<TFunc, TConfig>, 'swrConfig' | 'params'> {
+export interface IUseQueryInfiniteConfig<
+  TFunc extends AnyPromiseFunction,
+  TConfig extends object | undefined,
+  TResponse = Awaited<ReturnType<TFunc>>,
+> extends Omit<IUseQueryConfig<TFunc, TConfig>, 'swrConfig' | 'params'> {
   /** Additional config to send to SWR (like settings or fallback data for SSR) */
   swrConfig?: SWRInfiniteConfiguration<TResponse | undefined>;
   /** The params for the API call (usually a combination route params, query string params & body). Must be supplied as a function which is passed the index of the current page */

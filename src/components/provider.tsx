@@ -8,6 +8,6 @@
 import * as React from 'react';
 import { SWRConfig } from 'swr';
 
-export const ApiSwrProvider: React.FC<React.ComponentProps<typeof SWRConfig>> = ({ children, value }) => {
+export const ApiSwrProvider = ({ children, value }: React.ComponentProps<typeof SWRConfig>) => {
   return <SWRConfig value={{ provider: () => new Map(), ...value }}>{children}</SWRConfig>;
 };

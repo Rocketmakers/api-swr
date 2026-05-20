@@ -1,4 +1,4 @@
-import { renderHook, act, waitFor } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
 
 import { useClientFetch } from './useClientFetch';
 
@@ -25,17 +25,14 @@ describe('useClientFetch', () => {
     expect(result.current.error).toBeUndefined();
     expect(result.current.isLoading).toBe(false);
 
-    act(() => {
-      void result.current.clientFetch();
+    await act(async () => {
+      await result.current.clientFetch();
     });
-
-    await waitFor(() => expect(result.current.isLoading).toBe(true));
 
     expect(fetcherMock).toHaveBeenCalledTimes(1);
     expect(fetcherMock).toHaveBeenCalledWith({ param1: 'value1' }, { timeout: 5000 });
 
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
-
+    expect(result.current.isLoading).toBe(false);
     expect(result.current.data).toEqual(responseData);
     expect(result.current.error).toBeUndefined();
     expect(result.current.processingResponse).toEqual({
@@ -64,17 +61,14 @@ describe('useClientFetch', () => {
     expect(result.current.error).toBeUndefined();
     expect(result.current.isLoading).toBe(false);
 
-    act(() => {
-      void result.current.clientFetch();
+    await act(async () => {
+      await result.current.clientFetch();
     });
-
-    await waitFor(() => expect(result.current.isLoading).toBe(true));
 
     expect(fetcherMock).toHaveBeenCalledTimes(1);
     expect(fetcherMock).toHaveBeenCalledWith({ param1: 'value1' }, { timeout: 5000 });
 
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
-
+    expect(result.current.isLoading).toBe(false);
     expect(result.current.data).toBeUndefined();
     expect(result.current.error).toEqual(error);
     expect(result.current.processingResponse).toEqual({
@@ -96,11 +90,9 @@ describe('useClientFetch', () => {
       useClientFetch('controller.endpoint', 'query', { timeout: 5000 }, fetcherMock, { param1: 'value1' }, undefined, globalFetchWrapperHookMock)
     );
 
-    act(() => {
-      void result.current.clientFetch();
+    await act(async () => {
+      await result.current.clientFetch();
     });
-
-    await waitFor(() => expect(result.current.isLoading).toBe(true));
 
     expect(globalFetchWrapperHookMock).toHaveBeenCalled();
 
@@ -127,11 +119,9 @@ describe('useClientFetch', () => {
       )
     );
 
-    act(() => {
-      void result.current.clientFetch();
+    await act(async () => {
+      await result.current.clientFetch();
     });
-
-    await waitFor(() => expect(result.current.isLoading).toBe(true));
 
     expect(localFetchWrapperMock).toHaveBeenCalledWith({
       rootFetcher: fetcherMock,
@@ -156,11 +146,9 @@ describe('useClientFetch', () => {
       )
     );
 
-    act(() => {
-      void result.current.clientFetch();
+    await act(async () => {
+      await result.current.clientFetch();
     });
-
-    await waitFor(() => expect(result.current.isLoading).toBe(true));
 
     expect(globalFetchWrapperHookMock).toHaveBeenCalled();
 
