@@ -8,7 +8,7 @@ importers:
   .:
     dependencies:
       axios:
-        specifier: ^1.6.5
+        specifier: ^1.16.1
         version: 1.16.1
       swr:
         specifier: ^2.4.1
