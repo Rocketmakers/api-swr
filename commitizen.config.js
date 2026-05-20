@@ -24,7 +24,7 @@ module.exports = {
   ticketNumberPrefix: 'APH-',
   allowCustomScopes: true,
   allowBreakingChanges: ['feat', 'fix'],
-  skipQuestions: ['body', 'footer', 'scope', 'breaking'],
+  skipQuestions: ['body', 'footer', 'scope'],
   subjectLimit: 200,
 
   messages: {

@@ -6,7 +6,6 @@
 export * from './components/provider';
 export * from './factories/axiosOpenApiController';
 export * from './factories/genericApiController';
-export * from './hooks/useClearCache';
 export * from './hooks/useCacheManager';
 export * from './@types/global';
 export * from './@types/axiosOpenApiController';
