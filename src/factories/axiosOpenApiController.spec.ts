@@ -1,6 +1,6 @@
 import type { AxiosResponse } from 'axios';
 
-import { renderHook } from '@testing-library/react';
+import { renderHook, act, waitFor } from '@testing-library/react';
 import { fixGeneratedClient } from '../utils/api';
 import { cacheKeyConcat } from '../utils/caching';
 import { createMockAxiosErrorResponse, createMockAxiosSuccessResponse } from '../utils/mocking';
@@ -175,7 +175,7 @@ describe('axiosOpenApiControllerFactory', () => {
       testGetSuccess: mockTestSuccess,
     });
     renderHook(() => localMockControllerHooks.testGetSuccess.useQuery({ enableMocking: true, params: { hello: 'test-query' } }));
-    expect(mockTestSuccess).toHaveBeenCalledWith({ hello: 'test-query' }, undefined);
+    await waitFor(() => expect(mockTestSuccess).toHaveBeenCalledWith({ hello: 'test-query' }, undefined));
   });
 
   it('should call mock function when enableMocking is passed through infinite query hook config', async () => {
@@ -186,7 +186,7 @@ describe('axiosOpenApiControllerFactory', () => {
       testGetSuccess: mockTestSuccess,
     });
     renderHook(() => localMockControllerHooks.testGetSuccess.useInfiniteQuery({ enableMocking: true, params: () => ({ hello: 'test-query' }) }));
-    expect(mockTestSuccess).toHaveBeenCalledWith({ hello: 'test-query' }, undefined);
+    await waitFor(() => expect(mockTestSuccess).toHaveBeenCalledWith({ hello: 'test-query' }, undefined));
   });
 
   it('should call mock function when enableMocking is passed through mutation hook config', async () => {
@@ -199,7 +199,9 @@ describe('axiosOpenApiControllerFactory', () => {
     const { result } = renderHook(() =>
       localMockControllerHooks.testGetSuccess.useMutation({ enableMocking: true, params: { hello: 'test-mutation' } })
     );
-    await result.current.clientFetch();
+    await act(async () => {
+      await result.current.clientFetch();
+    });
     expect(mockTestSuccess).toHaveBeenCalledWith({ hello: 'test-mutation' }, undefined);
   });
 
