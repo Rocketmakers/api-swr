@@ -16,8 +16,9 @@
     "preserveConstEnums": false,
     "esModuleInterop": true,
     "importHelpers": true,
-    "moduleResolution": "node",
-    "lib": ["es2016", "dom", "dom.iterable"]
+    "moduleResolution": "nodenext",
+    "lib": ["es2016", "dom", "dom.iterable"],
+    "types": ["jest"]
   },
   "exclude": ["node_modules", "tests", "_test", "stories", "mock", "*jest.config.*", "dist"]
 }
