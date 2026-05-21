@@ -1,3 +1,15 @@
+# [4.0.0](https://github.com/Rocketmakers/api-swr/compare/v3.0.0...v4.0.0) (2026-05-21)
+
+
+### Features
+
+* upgrade to TypeScript 6 ([a13b55b](https://github.com/Rocketmakers/api-swr/commit/a13b55bba968ae588a2784cded8c69b9e008da78))
+
+
+### BREAKING CHANGES
+
+* TypeScript 6 is now the minimum required version.
+
 # [3.0.0](https://github.com/Rocketmakers/api-swr/compare/v2.2.3...v3.0.0) (2026-05-21)
 
 
