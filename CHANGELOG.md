@@ -1,3 +1,33 @@
+# [6.0.0](https://github.com/Rocketmakers/api-swr/compare/v5.0.0...v6.0.0) (2026-05-21)
+
+
+### Features
+
+* upgrade to latest Axios ([53f69e6](https://github.com/Rocketmakers/api-swr/commit/53f69e68c45eea1342c601f0d56adbb6a8cd1ad9))
+* upgrade to TypeScript 6 ([0905c66](https://github.com/Rocketmakers/api-swr/commit/0905c661c70118416f388cf47b02a6d07c660faa))
+* upgrade to TypeScript 6 ([356261a](https://github.com/Rocketmakers/api-swr/commit/356261a4dc2c90b229b5d3e67a5d2c57f4506f89))
+* upgrade to TypeScript 6 ([4767af5](https://github.com/Rocketmakers/api-swr/commit/4767af54429bfa4a87dbdd4c20a458be0b16a7a7))
+* upgrade to TypeScript 6 ([806f87f](https://github.com/Rocketmakers/api-swr/commit/806f87fa815d65215417902f810af8614970e593))
+* upgrade to TypeScript 6 ([4f566f4](https://github.com/Rocketmakers/api-swr/commit/4f566f4234752169b1cc01deac389f2cc1a5f53e))
+* upgrade to TypeScript 6 ([321e7e0](https://github.com/Rocketmakers/api-swr/commit/321e7e030f098f419c5ffa9cb8f8f2015b991fdc))
+* upgrade to Zod 4 ([075601d](https://github.com/Rocketmakers/api-swr/commit/075601d7cf374da9e161acf71bbc858160b125a9))
+* upgrade to Zod 4 ([5fcf382](https://github.com/Rocketmakers/api-swr/commit/5fcf382af9e54d8c86224de21c92a285330481e4))
+* upgrade to Zod 4 ([dadd646](https://github.com/Rocketmakers/api-swr/commit/dadd6466ab37bd3ad135d2427c28ea6394510d68))
+
+
+### BREAKING CHANGES
+
+* Axios has been upgraded to the latest major version.
+* Zod 4 is now the minimum required version.
+* TypeScript 6 is now the minimum required version.
+* Zod 4 is now the minimum required version.
+* TypeScript 6 is now the minimum required version.
+* TypeScript 6 is now the minimum required version.
+* Zod 4 is now the minimum required version.
+* TypeScript 6 is now the minimum required version.
+* TypeScript 6 is now the minimum required version.
+* TypeScript 6 is now the minimum required version.
+
 # [5.0.0](https://github.com/Rocketmakers/api-swr/compare/v4.0.0...v5.0.0) (2026-05-21)
 
 
