@@ -1,3 +1,35 @@
+# [4.0.0](https://github.com/Rocketmakers/api-swr/compare/v3.0.0...v4.0.0) (2026-05-21)
+
+
+### Features
+
+* upgrade to TypeScript 6 ([a13b55b](https://github.com/Rocketmakers/api-swr/commit/a13b55bba968ae588a2784cded8c69b9e008da78))
+
+
+### BREAKING CHANGES
+
+* TypeScript 6 is now the minimum required version.
+
+# [3.0.0](https://github.com/Rocketmakers/api-swr/compare/v2.2.3...v3.0.0) (2026-05-21)
+
+
+### Bug Fixes
+
+* APH-fix issue with release failing OIDC ([877e9e4](https://github.com/Rocketmakers/api-swr/commit/877e9e4c40bcd2636551e9c1703c171f7d96eee2))
+* APH-issue with pnpm ver in release ([de5f3b4](https://github.com/Rocketmakers/api-swr/commit/de5f3b41d97f12e9903ccf3fe9661db6967c664f))
+* ensured release has correct permissions ([3ec9ee3](https://github.com/Rocketmakers/api-swr/commit/3ec9ee3f9c52a594b9b3bd7c20a90a99e0c93526))
+* husky \& build fix ([8bf71ff](https://github.com/Rocketmakers/api-swr/commit/8bf71ffed9804bfabf0de6c5935bfd6c9dd10d8d))
+
+
+### Features
+
+* upgrade to React 19 and remove deprecated useClearCache hook ([56ff69b](https://github.com/Rocketmakers/api-swr/commit/56ff69b2768548234ca21a3eb9cdb9738c361ff5))
+
+
+### BREAKING CHANGES
+
+* React 19 is now the minimum required version. The useClearCache hook has been removed, use useCacheManager().clearAll() instead.
+
 ## [2.2.3](https://github.com/Rocketmakers/api-swr/compare/v2.2.2...v2.2.3) (2025-11-17)
 
 
