@@ -3,6 +3,11 @@ on:
   push:
     branches:
       - main
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  id-token: write
 jobs:
   release:
     name: Release
@@ -12,10 +17,11 @@ jobs:
         uses: actions/checkout@main
         with:
           fetch-depth: 0
-      - name: Set Node.js 20.11.0
+      - name: Set Node.js 22
         uses: actions/setup-node@main
         with:
           node-version: 22
+          registry-url: 'https://registry.npmjs.org'
       - name: Install pnpm
         uses: pnpm/action-setup@v4
       - name: Install dependencies
@@ -27,6 +33,5 @@ jobs:
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           HUSKY: 0
         run: npx semantic-release
