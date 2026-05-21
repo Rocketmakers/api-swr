@@ -3,7 +3,8 @@
   "compilerOptions": {
     "target": "ES2015",
     "module": "CommonJS",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "types": ["jest", "node"]
   },
   "exclude": ["node_modules", "*.js", "dist"]
 }
