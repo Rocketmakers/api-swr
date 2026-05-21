@@ -1,3 +1,21 @@
+# [5.0.0](https://github.com/Rocketmakers/api-swr/compare/v4.0.0...v5.0.0) (2026-05-21)
+
+
+### Features
+
+* upgrade to TypeScript 6 ([2fdfcc3](https://github.com/Rocketmakers/api-swr/commit/2fdfcc34dbb52d7616fd294a2a82a388bf711c5d))
+* upgrade to TypeScript 6 ([932b127](https://github.com/Rocketmakers/api-swr/commit/932b127b1442d5c00ac48fd633a3028f90599cfc))
+* upgrade to TypeScript 6 ([0dc125c](https://github.com/Rocketmakers/api-swr/commit/0dc125c2779f7bfc00dfbfa3bb467c0670b1e249))
+* upgrade to Zod 4 ([710b121](https://github.com/Rocketmakers/api-swr/commit/710b121d7017cde3fb591de6217420d2ca558463))
+
+
+### BREAKING CHANGES
+
+* Zod 4 is now the minimum required version.
+* TypeScript 6 is now the minimum required version.
+* TypeScript 6 is now the minimum required version.
+* TypeScript 6 is now the minimum required version.
+
 # [4.0.0](https://github.com/Rocketmakers/api-swr/compare/v3.0.0...v4.0.0) (2026-05-21)
 
 
