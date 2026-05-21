@@ -4,7 +4,8 @@ on:
     branches:
       - main
 permissions:
-  contents: read
+  contents: write
+  issues: write
   id-token: write
 jobs:
   release:
@@ -21,10 +22,12 @@ jobs:
           fetch-depth: 0
       - name: Install pnpm
         uses: pnpm/action-setup@v4
+        with:
+          version: latest
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version-file: '.tool-versions'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: build
@@ -34,5 +37,4 @@ jobs:
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          HUSKY: 0
         run: pnpm exec semantic-release
