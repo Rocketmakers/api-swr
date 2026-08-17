@@ -10,9 +10,6 @@ importers:
       axios:
         specifier: ^1.16.1
         version: 1.16.1
-      swr:
-        specifier: ^2.4.1
-        version: 2.4.1(react@19.2.6)
     devDependencies:
       '@semantic-release/changelog':
         specifier: ^6.0.3
@@ -134,6 +131,9 @@ importers:
       shx:
         specifier: ^0.4.0
         version: 0.4.0
+      swr:
+        specifier: ^2.4.2
+        version: 2.5.1(react@19.2.6)
       ts-jest:
         specifier: ^29.4.10
         version: 29.4.10(@babel/core@7.29.0)(@jest/transform@30.4.1)(@jest/types@30.4.1)(babel-jest@30.4.1(@babel/core@7.29.0))(jest-util@30.4.1)(jest@30.4.2(@types/node@25.9.0)(ts-node@10.9.2(@types/node@25.9.0)(typescript@6.0.3)))(typescript@6.0.3)
@@ -4440,8 +4440,8 @@ packages:
     resolution: { integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w== }
     engines: { node: '>= 0.4' }
 
-  swr@2.4.1:
-    resolution: { integrity: sha512-2CC6CiKQtEwaEeNiqWTAw9PGykW8SR5zZX8MZk6TeAvEAnVS7Visz8WzphqgtQ8v2xz/4Q5K+j+SeMaKXeeQIA== }
+  swr@2.5.1:
+    resolution: { integrity: sha512-BRw55e8r0B7SpDN20CAzoQAHl7y1yP7/Zt7oqUjMv0vSt2u2Xnkm88Ws+VypbV9BXHQVuSuyVq7zMjO16wSExw== }
     peerDependencies:
       react: ^16.11.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
@@ -9783,7 +9783,7 @@ snapshots:
 
   supports-preserve-symlinks-flag@1.0.0: {}
 
-  swr@2.4.1(react@19.2.6):
+  swr@2.5.1(react@19.2.6):
     dependencies:
       dequal: 2.0.3
       react: 19.2.6
